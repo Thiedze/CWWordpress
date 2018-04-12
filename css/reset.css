@@ -1,0 +1,143 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+.eventcal >html,
+ .eventcal >body, 
+ .eventcal >div, 
+ .eventcal >span, 
+ .eventcal >applet, 
+ .eventcal >object, 
+ .eventcal >iframe, 
+
+.eventcal >h1, 
+ .eventcal >h2, 
+ .eventcal >h3, 
+ .eventcal >h4, 
+ .eventcal >h5, 
+ .eventcal >h6, 
+ .eventcal >p, 
+ .eventcal >blockquote, 
+ .eventcal >pre, 
+
+.eventcal >a, 
+ .eventcal >abbr, 
+ .eventcal >acronym, 
+ .eventcal >address, 
+ .eventcal >big, 
+ .eventcal >cite, 
+ .eventcal >code, 
+
+.eventcal >del, 
+ .eventcal >dfn, 
+ .eventcal >em, 
+ .eventcal >img, 
+ .eventcal >ins, 
+ .eventcal >kbd, 
+ .eventcal >q, 
+ .eventcal >s, 
+ .eventcal >samp, 
+
+.eventcal >small, 
+ .eventcal >strike, 
+ .eventcal >strong, 
+ .eventcal >sub, 
+ .eventcal >sup, 
+ .eventcal >tt, 
+ .eventcal >var, 
+
+.eventcal >b, 
+ .eventcal >u, 
+ .eventcal >i, 
+ .eventcal >center, 
+
+.eventcal >dl, 
+ .eventcal >dt, 
+ .eventcal >dd, 
+ .eventcal >ol, 
+ .eventcal >ul, 
+ .eventcal >li, 
+
+.eventcal >fieldset, 
+ .eventcal >form, 
+ .eventcal >label, 
+ .eventcal >legend, 
+
+.eventcal >table, 
+ .eventcal >caption, 
+ .eventcal >tbody, 
+ .eventcal >tfoot, 
+ .eventcal >thead, 
+ .eventcal >tr, 
+ .eventcal >th, 
+ .eventcal >td, 
+
+.eventcal >article, 
+ .eventcal >aside, 
+ .eventcal >canvas, 
+ .eventcal >details, 
+ .eventcal >embed, 
+ 
+.eventcal >figure, 
+ .eventcal >figcaption, 
+ .eventcal >footer, 
+ .eventcal >header, 
+ .eventcal >hgroup, 
+ 
+.eventcal >menu, 
+ .eventcal >nav, 
+ .eventcal >output, 
+ .eventcal >ruby, 
+ .eventcal >section, 
+ .eventcal >summary, 
+
+.eventcal >time, 
+ .eventcal >mark, 
+ .eventcal >audio, 
+ video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+.eventcal > .eventcal >article, 
+ .eventcal >aside, 
+ .eventcal >details, 
+ .eventcal >figcaption, 
+ .eventcal >figure, 
+
+.eventcal >footer, 
+ .eventcal >header, 
+ .eventcal >hgroup, 
+ .eventcal >menu, 
+ .eventcal >nav, 
+ .eventcal >section, 
+ main {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+.eventcal > ol,
+ ul {
+	list-style: none;
+}
+.eventcal > blockquote,
+ q {
+	quotes: none;
+}
+.eventcal > blockquote:before,
+.eventcal > blockquote:after,
+
+.eventcal > q:before,
+.eventcal > q:after {
+	content: '';
+	content: none;
+}
+.eventcal > table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}

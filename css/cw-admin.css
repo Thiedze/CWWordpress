@@ -1,0 +1,91 @@
+.sw_off{
+    background: #a00;
+    border-radius: 15px;
+    width: 30px;
+    height: 15px;
+}
+
+.sw_on{
+    background: #0a0;
+    border-radius: 15px;
+    width: 30px;
+    height: 15px;
+}
+
+.sw_on > div{
+    border-radius: 13px;
+    height: 13px;
+    width: 13px;
+    background: #fff;
+    position: relative;
+    left: 16px;
+    top: 1px;
+}
+
+.sw_off > div{
+    border-radius: 13px;
+    height: 13px;
+    width: 13px;
+    background: #fff;
+    position: relative;
+    left: 1px;
+    top: 1px;
+}
+
+.sorting_asc{
+    background: url('../img/asc.png') no-repeat;
+    background-position-x: right;
+    background-position-y: center;
+}
+
+.sorting_desc{
+    background: url('../img/desc.png') no-repeat;
+    background-position-x: right;
+    background-position-y: center;
+}
+
+.sortable > a{
+    padding-left: 10px !important;
+}
+
+table.dataTable > tbody tr.odd{
+    background: #eaeaea;
+}
+
+.register > div {
+    margin-bottom: 15px;
+    overflow: auto;
+    height: auto;
+    clear: both;
+    padding: 2px;
+}
+
+.register > div >span{
+    font-weight: bold;
+}
+
+.register > div > input[type="text"]
+{
+    width: 100%;
+}
+
+.register > div > input[type="email"]
+{
+    width: 100%;
+}
+
+div.kurse_a > a > section > img:hover{
+    -webkit-filter: brightness(100%);
+    -moz-filter: brightness(100%);
+    -ms-filter: brightness(100%);
+    -o-filter: brightness(100%);
+    filter: brightness(100%);
+}
+
+div.kurse_a > a > section > img{
+    -webkit-filter: brightness(75%);
+    -moz-filter: brightness(75%);
+    -ms-filter: brightness(75%);
+    -o-filter: brightness(75%);
+    filter: brightness(75%);
+}
