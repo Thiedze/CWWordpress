@@ -234,29 +234,27 @@ class Export_XLS {
 
 	private function download_file( $excel, $filename ) {
 
-		$dir = wp_upload_dir();
-
-		//Als erstes wird die scheiß Datei erstellt, dann kann man auch die Größe ermitteln
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter( $excel, 'Xlsx' );
-		$writer->save( $dir['basedir'].'/'.$filename );
-		$size = filesize( $dir['basedir'].'/'.$filename );
 
-		//Nachdem wir die Größe haben, killen wir die Datei (die braucht kein Mensch)
-		unlink( $dir['basedir'].'/'.$filename );
+		// Dateiinhalt in eigenem Buffer erzeugen
+		ob_start();
+		$writer->save( 'php://output' );
+		$content = ob_get_clean();
 
-		//Dann den Cache löschen, damit kein Rotz mit in der Datei landet
-		ob_clean();
+		// Alle offenen WordPress-Buffer leeren, damit kein HTML in die Datei gelangt
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 
-		//Jetzt den Header setzen und dann die Datei raushauen
 		header( 'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' );
-		header( 'Content-Disposition: attachment;filename="'.$filename.'"' );
+		header( 'Content-Disposition: attachment;filename="' . $filename . '"' );
 		header( 'Content-Transfer-Encoding: binary' );
-		header( 'Content-Length: '.$size );
-		header( 'Cache-Control: max-age=1' );
-		header( 'Cache-Control: cache, must-revalidate' );
+		header( 'Content-Length: ' . strlen( $content ) );
+		header( 'Cache-Control: max-age=0' );
 		header( 'Pragma: public' );
 
-		$writer->save( 'php://output' );
+		echo $content;
+		exit();
 	}
 
 }

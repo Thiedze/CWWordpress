@@ -60,7 +60,7 @@ function kurse_front(){
                 <section>
                     <img src="'.$kurs->getBild().'" style="height:100px"><br />
                     <h4 style="font-weight: bold">'.$kurs->getName().'</h4>
-                    '.($frei <= 0 ? '<span style="color: #d00;font-weight: bold">Ausgebucht</span>' : $frei.'  Pl&auml;tze frei').'
+                    '.(!$kurs->getIs_open() ? '<span style="color: #888;font-weight: bold">Geschlossenes Projekt</span>' : ($frei <= 0 ? '<span style="color: #d00;font-weight: bold">Ausgebucht</span>' : $frei.'  Pl&auml;tze frei')).'
                 </section>
             </a>
         </div>

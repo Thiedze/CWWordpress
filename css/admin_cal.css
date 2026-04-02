@@ -1,0 +1,174 @@
+/* =============================================
+   Campuswoche – Admin-Kalender (Drag & Drop)
+   ============================================= */
+
+#cw-cal-outer {
+    font-family: -apple-system, sans-serif;
+    margin-top: 10px;
+}
+
+/* ---- Header (Tagesnamen) ---- */
+#cw-cal-head {
+    white-space: nowrap;
+    border-bottom: 2px solid #aaa;
+    padding-bottom: 5px;
+    margin-bottom: 0;
+}
+
+.cw-day-head {
+    display: inline-block;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    overflow: hidden;
+    border-right: 1px solid #ddd;
+    padding: 4px 0;
+}
+
+/* ---- Scrollbereich ---- */
+#cw-cal-scroll {
+    overflow-y: auto;
+    max-height: 680px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+/* ---- Grid-Körper ---- */
+#cw-cal-body {
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ---- Zeitbeschriftung ---- */
+.cw-time-label {
+    position: absolute;
+    left: 0;
+    font-size: 10px;
+    color: #999;
+    width: 50px;
+    text-align: right;
+    padding-right: 5px;
+    line-height: 1;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ---- Rasterlinien ---- */
+.cw-grid-line {
+    position: absolute;
+    height: 1px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cw-hour { background: #c8c8c8; }
+.cw-half { background: #ebebeb; }
+
+/* ---- Tages-Spalten ---- */
+.cw-col {
+    position: absolute;
+    top: 0;
+    border-right: 1px solid #ddd;
+    cursor: crosshair;
+    z-index: 2;
+}
+
+.cw-col-even {
+    background: rgba(0, 0, 0, 0.018);
+}
+
+/* ---- Events ---- */
+.cw-event {
+    position: absolute;
+    border: 1px solid rgba(0, 0, 0, 0.22);
+    border-radius: 3px;
+    padding: 3px 5px 10px 5px;
+    cursor: grab;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    font-size: 11px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+.cw-event.cw-dragging {
+    cursor: grabbing;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.28);
+    z-index: 200;
+    opacity: 0.88;
+}
+
+.cw-event.cw-resizing {
+    z-index: 200;
+}
+
+/* ---- Buttons (Bearbeiten / Löschen) ---- */
+.cw-event-btns {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    display: none;
+    align-items: center;
+    gap: 3px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 2px;
+    padding: 1px 3px;
+    z-index: 20;
+}
+
+.cw-event:hover .cw-event-btns {
+    display: flex;
+}
+
+.cw-event-btns a,
+.cw-event-btns .cw-btn-del {
+    font-size: 13px !important;
+    width: 13px !important;
+    height: 13px !important;
+    line-height: 1 !important;
+    color: #555;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cw-event-btns a:hover  { color: #0073aa; }
+.cw-btn-del:hover       { color: #b00 !important; }
+
+/* ---- Zeitanzeige / Titel / Untertitel ---- */
+.cw-event-time {
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.58);
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.cw-event-name {
+    font-weight: bold;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.cw-event-sub {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+/* ---- Resize-Griff (untere Kante) ---- */
+.cw-resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    cursor: s-resize;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 0 0 3px 3px;
+}

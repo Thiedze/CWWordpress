@@ -246,6 +246,16 @@ function register() {
 			$error_msg .= '<li>Du musst die drei Erkl&auml;rungen noch best&auml;tigen</li>';
 		}
 
+		if ( isset( $_POST["gbd"] ) && isset( $_POST["gbm"] ) && isset( $_POST["gby"] ) ) {
+			$geb_check  = $_POST["gby"] . '-' . ( $_POST["gbm"] < 10 ? '0' . $_POST["gbm"] : $_POST["gbm"] ) . '-' . ( $_POST["gbd"] < 10 ? '0' . $_POST["gbd"] : $_POST["gbd"] );
+			$ref_date   = $options->getCwStart() ? $options->getCwStart() : 'today';
+			$age        = date_diff( date_create( $geb_check ), date_create( $ref_date ) )->y;
+			if ( $age < 16 ) {
+				$error     = true;
+				$error_msg .= '<li>Du musst zum Start der Campuswoche mindestens 16 Jahre alt sein</li>';
+			}
+		}
+
 
 		$error_msg .= '</ul>';
 
@@ -429,12 +439,18 @@ function register() {
 	}
 	$ret .= '
 				</select>
+			<div id="age-warning" style="display:none;color:#900;font-weight:bold;margin-top:5px">
+				Du musst zum Start der Campuswoche mindestens 16 Jahre alt sein.
 			</div>
-				
+			</div>
+
 			<div>
 				<span>Ich bin:</span><br />			
 				<input type="radio" name="paytype" value="1" '.( $_POST["paytype"] == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler/Student (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
 				<input type="radio" name="paytype" value="2" '.( $_POST["paytype"] == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.$options->get_teilnahme_preis_alumni().'€</b>)
+				<div id="paytype-warning" style="display:none;color:#900;font-weight:bold;margin-top:5px">
+					Bitte w&auml;hle aus, ob du Sch&uuml;ler/Student oder Alumni bist.
+				</div>
 			</div>
 			
 			<div>
@@ -547,11 +563,12 @@ function register() {
 				<p>&nbsp;</p>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
-				<input type="submit" name="registerme" value="Anmelden-&gt;" style="float: right"/>
+				<input type="submit" id="btn-registerme" name="registerme" value="Anmelden-&gt;" style="float: right"/>
 			</div>
 			
 			<input type="hidden" id="pt1" value="'.$options->getTeilnahmePreis().'" />
 			<input type="hidden" id="pt2" value="'.$options->get_teilnahme_preis_alumni().'" />
+			<input type="hidden" id="cw-start" value="'.$options->getCwStart().'" />
 	</form>
 	';
 

@@ -304,9 +304,11 @@ function edit_program(){
 
 	$event = new Event( $wpdb );
 
-	if(isset($_POST["eid"])) {
+	$eid = isset($_POST["eid"]) ? $_POST["eid"] : (isset($_GET["eid"]) ? $_GET["eid"] : null);
 
-		$event->load( $_POST["eid"] );
+	if($eid !== null) {
+
+		$event->load( $eid );
 
 		if ( $event->getId() == - 1 ) {
 			program_not_exist();
@@ -368,14 +370,14 @@ function edit_program(){
 
 
 			if($event->save()){
-				program_head(true);
+				program_head(false);
 				echo '
 					<div class="notice updated">
-						<p>Die &Auml;nderungen wurden gesprichert</p>
+						<p>Die &Auml;nderungen wurden gespeichert</p>
 					</div>
 				';
 
-				show_program();
+				show_program_calendar();
 				return;
 			}else{
 				program_head();
@@ -515,7 +517,7 @@ function edit_program(){
 				<a class="button" style="color: #900" href="'.menu_page_url('program',false).'">
 					<span class="dashicons dashicons-no" style="margin-top: 4px;"></span>Abbrechen
 				</a>
-				<input type="hidden" name="eid" value="'.$_POST["eid"].'" />
+				<input type="hidden" name="eid" value="'.$event->getId().'" />
 		</form>
 	';
 }

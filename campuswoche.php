@@ -31,10 +31,14 @@ require_once(CW_PLUGIN_DIR.'views/edit_teilnehmer.php');
 require_once(CW_PLUGIN_DIR.'views/view_kurse_front.php');
 require_once(CW_PLUGIN_DIR.'views/view_front_calendar.php');
 require_once(CW_PLUGIN_DIR.'views/view_calendar.php');
+require_once(CW_PLUGIN_DIR.'views/view_calendar_admin.php');
 
 
 add_action('admin_init','ad_init');
 add_action('activate_plugin','plugin_activate');
+add_action('wp_ajax_cw_cal_move',   'cw_cal_move');
+add_action('wp_ajax_cw_cal_delete', 'cw_cal_delete');
+add_action('wp_ajax_cw_cal_create', 'cw_cal_create');
 add_action('deactivate_plugin','plugin_deactivate');
 add_action('admin_menu', 'cwplugin');
 add_action('wp_ajax_ajax_action','do_ajax');
@@ -80,8 +84,11 @@ function load_scripts() {
 
 	wp_register_style('jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
 	wp_register_script('js_datatable','https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js');
+	wp_register_style('css_datatable','https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.css');
 	//wp_register_script('js_datatable','https://cdn.datatables.net/v/ju/jq-3.6.0/dt-1.13.4/date-1.4.0/r-2.4.1/datatables.min.js');
 	wp_register_style('cw-admin.css',plugin_dir_url( __FILE__ ) . '/css/cw-admin.css', array());
+	wp_register_style('admin-cal.css',plugin_dir_url( __FILE__ ) . '/css/admin_cal.css', array());
+	wp_enqueue_style('admin-cal.css');
 	wp_register_style('cal_reset.css',plugin_dir_url( __FILE__ ) . '/css/reset.css', array());
 	wp_register_style('cal_style.css',plugin_dir_url( __FILE__ ) . '/css/style.css', array());
 
@@ -94,11 +101,14 @@ function load_scripts() {
 	wp_enqueue_script( 'jquery-ui-effects' );
 	wp_enqueue_script( 'jquery-ui-datepicker' );
 	wp_enqueue_script( 'jquery-ui-spinner' );
+	wp_enqueue_script( 'jquery-ui-draggable' );
+	wp_enqueue_script( 'jquery-ui-resizable' );
 	wp_enqueue_script( 'jquery-effects-highlight' );
 	wp_enqueue_script( 'js_datatable' );
 	wp_enqueue_script( 'kurs.js', plugins_url( "/js/kurs.js", __FILE__ ) );
 	wp_enqueue_script( 'cw-admin.js', plugins_url( "/js/cw-admin.js", __FILE__ ) );
 	wp_enqueue_script( 'cal.js', plugins_url( "/js/cal.js", __FILE__ ) );
+	wp_enqueue_script( 'admin-cal.js', plugins_url( "/js/admin_cal.js", __FILE__ ), array('jquery','jquery-ui-draggable','jquery-ui-resizable','jquery-ui-dialog') );
 	//wp_enqueue_script( 'teilnehmer.js', plugins_url( "/js/teilnehmer.js", __FILE__ ) );
 	wp_enqueue_media();
 
@@ -226,21 +236,99 @@ function program(){
 				break;
 
 			case 'edit':
-				if(isset($_POST["edit"]) || isset($_POST["edit_done"])){ edit_program(); }
+				if(isset($_POST["edit"]) || isset($_POST["edit_done"]) || isset($_GET["eid"])){ edit_program(); }
 				if(isset($_POST["delete"])){ delete_program(); }
 				break;
 
 			default:
-				program_head(true);
-				show_program();
+				program_head(false);
+				show_program_calendar();
 		}
 	}else{
-		program_head(true);
-		show_program();
+		program_head(false);
+		show_program_calendar();
 	}
 
 	echo '</div>
 	';
+}
+
+/* ================================================================
+   AJAX-Handler: Event verschieben / strecken
+   ================================================================ */
+function cw_cal_move(){
+	if(!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_cal_nonce','nonce');
+
+	global $wpdb;
+	$id    = intval($_POST['id']);
+	$day   = intval($_POST['day']);
+	$start = intval($_POST['start']);
+	$end   = intval($_POST['end']);
+
+	if($day < 0 || $day > 5)           wp_send_json_error('invalid day');
+	if($start < 700 || $start > 2300)  wp_send_json_error('invalid start');
+	if($end   < 700 || $end   > 2300)  wp_send_json_error('invalid end');
+	if($end <= $start)                  wp_send_json_error('invalid range');
+
+	$event = new Event($wpdb);
+	$event->load($id);
+	if($event->getId() < 0) wp_send_json_error('not found');
+
+	$event->setEventDay($day);
+	$event->setEventStart($start);
+	$event->setEventEnd($end);
+	$event->save();
+
+	wp_send_json_success();
+}
+
+/* ================================================================
+   AJAX-Handler: Event löschen
+   ================================================================ */
+function cw_cal_delete(){
+	if(!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_cal_nonce','nonce');
+
+	global $wpdb;
+	$id = intval($_POST['id']);
+	$wpdb->query($wpdb->prepare("DELETE FROM ".$wpdb->prefix."cw_events WHERE id=%d", $id));
+
+	wp_send_json_success();
+}
+
+/* ================================================================
+   AJAX-Handler: Neues Event anlegen
+   ================================================================ */
+function cw_cal_create(){
+	if(!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_cal_nonce','nonce');
+
+	global $wpdb;
+	$day   = intval($_POST['day']);
+	$start = intval($_POST['start']);
+	$end   = intval($_POST['end']);
+	$name  = sanitize_text_field($_POST['name']);
+	$color = sanitize_hex_color($_POST['color']);
+	if(!$color) $color = '#d7e7a1';
+
+	if($day < 0 || $day > 5)          wp_send_json_error('invalid day');
+	if($start < 700 || $start > 2300) wp_send_json_error('invalid start');
+	if($end   < 700 || $end   > 2300) wp_send_json_error('invalid end');
+	if($end <= $start)                 wp_send_json_error('invalid range');
+	if(!$name)                         wp_send_json_error('no name');
+
+	$event = new Event($wpdb);
+	$event->setEventDay($day);
+	$event->setEventStart($start);
+	$event->setEventEnd($end);
+	$event->setEventName($name);
+	$event->setEventSubtext('');
+	$event->setEventDescription('');
+	$event->setEventColor($color);
+	$event->save();
+
+	wp_send_json_success(array('id' => $wpdb->insert_id));
 }
 
 function reg_front(){

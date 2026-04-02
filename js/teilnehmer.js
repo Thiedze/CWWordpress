@@ -7,11 +7,21 @@ var $errdialog;
 
 jQuery(document).ready(function(){
 
-    $module = jQuery('<div id="modal" style="width: 100%;height: 1000px; max-height: 1000px !important;font-size: 10pt;overflow: auto">ROFL</div>').dialog({
+    jQuery('#sorttable').DataTable({
+        scrollX: true,
+        autoWidth: false,
+        order: [],
+        destroy: true,
+        lengthChange: false,
+        paging: false,
+        info: false
+    });
+
+    $module = jQuery('<div id="modal" style="width:100%;font-size:10pt;overflow:auto">ROFL</div>').dialog({
         autoOpen: false,
-        width: "auto",
-        height: 1000,
-        position: { my: "center top", at: "center top", of: window },
+        width: Math.min(jQuery(window).width() * 0.95, 800),
+        height: Math.min(jQuery(window).height() * 0.9, 1000),
+        position: { my: "center top", at: "center top+10", of: window },
         modal: true,
         title: "Benutzer bearbeiten",
         buttons: {

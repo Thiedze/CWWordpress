@@ -22,12 +22,6 @@ jQuery(document).ready(function($){
         "searching": false
     });
 
-    jQuery('table[id^="sorttable"]').DataTable({
-        paging:   false,
-        info:     false,
-        searching: false,
-        responsive: true
-    });
 
     jQuery('#upload_image_button').click(function(e) {
 

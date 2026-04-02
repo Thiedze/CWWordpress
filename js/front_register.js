@@ -43,4 +43,43 @@ jQuery(document).ready(function(){
         jQuery('#tnb').html(0);
     }
 
+    function checkSubmit() {
+        var valid = true;
+
+        // Alterscheck
+        var d = parseInt(jQuery('select[name="gbd"]').val());
+        var m = parseInt(jQuery('select[name="gbm"]').val()) - 1;
+        var y = parseInt(jQuery('select[name="gby"]').val());
+        if (d && y) {
+            var cwStart  = new Date(jQuery('#cw-start').val());
+            var ref      = isNaN(cwStart.getTime()) ? new Date() : cwStart;
+            var birthday = new Date(y, m, d);
+            var age      = ref.getFullYear() - birthday.getFullYear();
+            var monthDiff = ref.getMonth() - birthday.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && ref.getDate() < birthday.getDate())) {
+                age--;
+            }
+            if (age < 16) {
+                jQuery('#age-warning').show();
+                valid = false;
+            } else {
+                jQuery('#age-warning').hide();
+            }
+        }
+
+        // Paytype-Check
+        if (!jQuery('input[name="paytype"]:checked').length) {
+            jQuery('#paytype-warning').show();
+            valid = false;
+        } else {
+            jQuery('#paytype-warning').hide();
+        }
+
+        jQuery('#btn-registerme').prop('disabled', !valid).css('opacity', valid ? '1' : '0.4');
+    }
+
+    jQuery('select[name="gbd"], select[name="gbm"], select[name="gby"]').on('change', checkSubmit);
+    jQuery('input[name="paytype"]').on('change', checkSubmit);
+    checkSubmit();
+
 });

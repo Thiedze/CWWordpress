@@ -64,20 +64,20 @@ function teilnehmer(){
 		echo'
 				<h1>Teilnehmer (aktuell '.count($teilnehmer).')
 					<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
-					<form method="post" style="float:right;display:flex;align-items:center" onsubmit="return confirm(\'Wirklich alle Teilnehmer löschen?\');">
-						<div style="float:right;display:flex;align-items:center">						
-							<input type="checkbox" style="margin-top:2px" value="1" name="delete_all" /><span style="font-size:9pt">Alle Teilnehmer entfernen</span>
-							<input type="hidden" name="del_csrf" value="'.$_SESSION['csrf'].'"/>
-							<button type="submit" name="delete_all_participants" class="button button-secondary delete" style="margin-left: 10px; background: #900; color:#fff">
-								<span class="dashicons dashicons-trash" style="margin-top: 5px;"></span>Alle löschen
-							</button>
-						</div>
+					<form method="post" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;vertical-align:middle" onsubmit="return confirm(\'Wirklich alle Teilnehmer löschen?\');">
+						<input type="checkbox" style="margin:0" value="1" name="delete_all" />
+						<span style="font-size:9pt;font-weight:normal">Alle Teilnehmer entfernen</span>
+						<input type="hidden" name="del_csrf" value="'.$_SESSION['csrf'].'"/>
+						<button type="submit" name="delete_all_participants" class="button button-secondary delete" style="background:#900;color:#fff;font-size:13px;height:30px;line-height:28px;padding:0 8px">
+							<span class="dashicons dashicons-trash" style="margin-top:5px"></span>Alle löschen
+						</button>
 					</form>
 				</h1>
-				
+
 				<br />
 				
-				<table id="sorttable" class="widefat striped sortable display responsive">
+				<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+				<table id="sorttable" class="widefat striped">
 					<thead>
 						<tr>
 						    <th data-orderable="false">
@@ -160,7 +160,7 @@ function teilnehmer(){
 				echo'
 					</tbody>
 				</table>
-				
+				</div>
 			</div>
 		';
 	}
