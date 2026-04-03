@@ -23,6 +23,27 @@ function show_options(){
 			[front_register] = Registrierungsformular<br />
 			[front_kurse] = Auflistung der Kurse<br />
 			[front_calendar] = Das Wochenprogramm
+			<hr style="margin: 8px 0" />
+			<strong>Platzhalter:</strong><br />
+			<span style="font-size: 9pt">
+				<b>E-Mail Anmeldung:</b><br />
+				<a class="ed">{{Name}}</a> = Nachname<br />
+				<a class="ed">{{Vorname}}</a> = Vorname<br />
+				<a class="ed">{{Fullname}}</a> = Vorname Nachname<br />
+				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr (ohne €)<br />
+				<a class="ed">{{BetragShirt}}</a> = T-Shirt Betrag (ohne €)<br />
+				<a class="ed">{{Kurs}}</a> = Gebuchter Kurs<br />
+				<a class="ed">{{Shirt}}</a> = Gewähltes T-Shirt<br />
+				<a class="ed">{{Gesamt}}</a> = Gesamtbetrag (ohne €)<br />
+				<a class="ed">{{lezterTagShopBestellung}}</a> = 4 Wochen vor CW-Start<br />
+				<br />
+				<b>Text oberhalb Anmeldeformular:</b><br />
+				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr Schüler/Stud.<br />
+				<a class="ed">{{BetragAlumni}}</a> = Teilnahmegebühr Alumni<br />
+				<br />
+				<b>Text Beschreibung Shirt:</b><br />
+				<a class="ed">{{lezterTagShopBestellung}}</a> = 4 Wochen vor CW-Start
+			</span>
 		</div>
 		<form method="post" style="float: left">
 			<table class="form-table">
@@ -98,18 +119,7 @@ function show_options(){
 				<tr>
 					<th>Text Anmeldung Email</th>
 					<td>
-						<textarea class="wp-editor-area" cols="80" rows="5" id="mailtext" name="email_text">'.$options->getTextEmail().'</textarea><br />
-						<span style="font-size: 9pt">
-							Legende:<br />
-							<a class="ed">{{Name}}</a> = Nachname<br />
-							<a class="ed">{{Vorname}}</a> = Vorname<br />
-							<a class="ed">{{Fullname}}</a> = Vorname Nachname<br />
-							<a class="ed">{{Betrag}}</a> = Betrag Teilnahme (<b>ohne &euro;-Zeichen</b>)<br />
-							<a class="ed">{{BetragShirt}}</a> = Betrag TShirt (<b>ohne &euro;-Zeichen</b>) Bei keinem Shirt wird 0 angezeigt<br />
-							<a class="ed">{{Kurs}}</a> = Kurs für den der Teilnehmer gemeldet ist<br />
-							<a class="ed">{{Shirt}}</a> = T-Shirt das gewählt wurde. (Bei keinem T-Shirt wird &quot;Kein T-Shirt&quot; angezeigt<br />
-							<a class="ed">{{Gesamt}}</a> = Gesamtbetrag für TShirt und Kurs (<b>ohne &euro;-Zeichen</b>)
-						</span>
+						<textarea class="wp-editor-area" cols="80" rows="5" id="mailtext" name="email_text">'.$options->getTextEmail().'</textarea>
 					</td>
 				</tr>
 			</table>

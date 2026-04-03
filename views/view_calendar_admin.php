@@ -21,10 +21,9 @@ function show_program_calendar() {
     <div id="cw-cal-outer">
 
         <p>
-            <a href="<?php echo esc_url( menu_page_url( 'program', false ) . '&action=new' ); ?>"
-               class="button button-primary">
+            <button id="cw-new-event-btn" class="button button-primary">
                 <span class="dashicons dashicons-plus" style="margin-top:3px"></span> Neu erstellen
-            </a>
+            </button>
             <span style="margin-left:12px;color:#777;font-size:12px">
                 Drag &amp; Drop zum Verschieben &nbsp;·&nbsp; Untere Kante zum Strecken &nbsp;·&nbsp; Klick auf freie Fläche = neues Event
             </span>
@@ -101,9 +100,9 @@ function show_program_calendar() {
                                     background:<?php echo esc_attr( $event->getEventColor() ); ?>">
 
                             <div class="cw-event-btns">
-                                <a href="<?php echo esc_url( $edit_url ); ?>"
-                                   class="dashicons dashicons-welcome-write-blog"
-                                   title="Bearbeiten"></a>
+                                <span class="cw-btn-edit dashicons dashicons-welcome-write-blog"
+                                      data-id="<?php echo esc_attr( $event->getId() ); ?>"
+                                      title="Bearbeiten"></span>
                                 <span class="cw-btn-del dashicons dashicons-trash"
                                       data-id="<?php echo esc_attr( $event->getId() ); ?>"
                                       title="Löschen"></span>
@@ -132,21 +131,69 @@ function show_program_calendar() {
 
     </div><!-- #cw-cal-outer -->
 
-    <!-- Dialog: Neues Event erzeugen -->
-    <div id="cw-new-dlg" style="display:none" title="Neues Event erstellen">
+    <!-- Dialog: Event erstellen / bearbeiten -->
+    <div id="cw-event-dlg" style="display:none" title="Event">
+        <input type="hidden" id="cw-dlg-eid" value="0" />
         <table class="form-table" style="margin:0">
             <tr>
-                <th style="width:60px">Titel</th>
-                <td><input type="text" id="cw-new-name" style="width:100%" placeholder="Pflichtfeld" /></td>
+                <th style="width:90px">Tag</th>
+                <td>
+                    <select id="cw-dlg-day">
+                        <?php foreach ( Event::get_days() as $i => $d ) : ?>
+                            <option value="<?php echo $i; ?>"><?php echo esc_html($d); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Start</th>
+                <td>
+                    <select id="cw-dlg-start">
+                        <?php for ($z = 7; $z <= 23; $z++) :
+                            $times = array($z * 100);
+                            if ($z < 23) $times[] = $z * 100 + 30;
+                            foreach ($times as $t) :
+                                $h = (int)floor($t / 100); $m = $t % 100;
+                        ?>
+                            <option value="<?php echo $t; ?>"><?php printf('%02d:%02d', $h, $m); ?></option>
+                        <?php endforeach; endfor; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Ende</th>
+                <td>
+                    <select id="cw-dlg-end">
+                        <?php for ($z = 7; $z <= 23; $z++) :
+                            $times = array($z * 100);
+                            if ($z < 23) $times[] = $z * 100 + 30;
+                            foreach ($times as $t) :
+                                $h = (int)floor($t / 100); $m = $t % 100;
+                        ?>
+                            <option value="<?php echo $t; ?>"><?php printf('%02d:%02d', $h, $m); ?></option>
+                        <?php endforeach; endfor; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Titel</th>
+                <td><input type="text" id="cw-dlg-name" class="regular-text" /></td>
+            </tr>
+            <tr>
+                <th>Untertitel</th>
+                <td><input type="text" id="cw-dlg-subtext" class="regular-text" /></td>
             </tr>
             <tr>
                 <th>Farbe</th>
-                <td><input type="color" id="cw-new-color" value="#d7e7a1" /></td>
+                <td><input type="color" id="cw-dlg-color" value="#d7e7a1" /></td>
+            </tr>
+            <tr>
+                <th style="vertical-align:top;padding-top:8px">Beschreibung</th>
+                <td><div id="cw-dlg-desc" contenteditable="true"
+                         style="min-height:100px;border:1px solid #8c8f94;border-radius:4px;padding:8px;background:#fff;overflow-y:auto"></div></td>
             </tr>
         </table>
-        <input type="hidden" id="cw-new-day" />
-        <input type="hidden" id="cw-new-start" />
-        <input type="hidden" id="cw-new-end" />
+        <div id="cw-dlg-error" class="notice notice-error" style="display:none;margin-top:10px"><p></p></div>
     </div>
 
     <!-- Konfiguration für admin_cal.js -->

@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 /**
  * Created by IntelliJ IDEA.
@@ -72,7 +72,8 @@ class Export_XLS {
 				$sheet = $phpx->createSheet();
 			}
 
-			$sheet->setTitle( substr( $kurs->getName(), 0, 20 ) );
+			$sheetTitle = substr( preg_replace( '/[\\\\\/\*\?\:\[\]]/', '', $kurs->getName() ), 0, 31 );
+			$sheet->setTitle( $sheetTitle ?: 'Kurs' );
 
 			$sheet->mergeCells( 'A1:J1' )->setCellValue( 'A1', $kurs->getName() )->getStyle( 'A1' )->getFont()->setBold( true )->setSize( 13 );
 
@@ -120,7 +121,7 @@ class Export_XLS {
 
 			$sheet->setAutoFilter('A2:J2');
 
-			$sheet->getPageSetup()->setFitToWidth( null )->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
+			$sheet->getPageSetup()->setFitToWidth( 0 )->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
 
 			foreach ( $this->abc as $item ) {
 				$sheet->getColumnDimension( $item )->setAutoSize( true );
@@ -219,7 +220,7 @@ class Export_XLS {
 
 				$sheet->setAutoFilter('A1:S1');
 
-				$sheet->getPageSetup()->setFitToWidth(null)->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
+				$sheet->getPageSetup()->setFitToWidth(0)->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
 
 			}
 

@@ -374,7 +374,12 @@ function register() {
 	$shirts = get_all_tshirts();
 
 	if(strlen(trim($options->get_text_register())) > 0){
-		$ret.= '<div style="border: 1px solid #333333; padding: 0.8rem; background: rgba(255,84,0,0.15)">'.nl2br($options->get_text_register()).'</div><br />';
+		$register_text = str_ireplace(
+			array('{{Betrag}}', '{{BetragAlumni}}'),
+			array($options->getTeilnahmePreis(), $options->get_teilnahme_preis_alumni()),
+			$options->get_text_register()
+		);
+		$ret.= '<div style="border: 1px solid #333333; padding: 0.8rem; background: rgba(255,84,0,0.15)">'.nl2br($register_text).'</div><br />';
 	}
 
 	$ret .= '
@@ -473,11 +478,14 @@ function register() {
 			</div>';
 
 	if ( $options->getShirtEnabled() == 1 ) {
+		$cwStart = date_create($options->getCwStart());
+		$cwStart->modify('-4 weeks');
+		$shirtText = str_ireplace('{{lezterTagShopBestellung}}', $cwStart->format('d.m.Y'), $options->getTextShirt());
 		$ret .= '
 			<div>
 				<span>W&auml;hle dein T-Shirt:</span>
-				<p style="color: #0076aa;padding: 2px;">'.$options->getTextShirt().'</p>
-				<select style="width: 100%" title="'.$options->getTextShirt().'" name="shirt">
+				<p style="color: #0076aa;padding: 2px;">'.$shirtText.'</p>
+				<select style="width: 100%" title="'.$shirtText.'" name="shirt">
 				<option value="-1">Kein T-Shirt</option>
 				';
 

@@ -36,9 +36,14 @@ require_once(CW_PLUGIN_DIR.'views/view_calendar_admin.php');
 
 add_action('admin_init','ad_init');
 add_action('activate_plugin','plugin_activate');
-add_action('wp_ajax_cw_cal_move',   'cw_cal_move');
-add_action('wp_ajax_cw_cal_delete', 'cw_cal_delete');
-add_action('wp_ajax_cw_cal_create', 'cw_cal_create');
+add_action('wp_ajax_cw_cal_move',    'cw_cal_move');
+add_action('wp_ajax_cw_cal_delete',  'cw_cal_delete');
+add_action('wp_ajax_cw_cal_create',  'cw_cal_create');
+add_action('wp_ajax_cw_kurs_load',   'cw_kurs_load_handler');
+add_action('wp_ajax_cw_kurs_save',   'cw_kurs_save_handler');
+add_action('wp_ajax_cw_kurs_delete', 'cw_kurs_delete_handler');
+add_action('wp_ajax_cw_event_load',  'cw_event_load_handler');
+add_action('wp_ajax_cw_event_save',  'cw_event_save_handler');
 add_action('deactivate_plugin','plugin_deactivate');
 add_action('admin_menu', 'cwplugin');
 add_action('wp_ajax_ajax_action','do_ajax');
@@ -106,6 +111,10 @@ function load_scripts() {
 	wp_enqueue_script( 'jquery-effects-highlight' );
 	wp_enqueue_script( 'js_datatable' );
 	wp_enqueue_script( 'kurs.js', plugins_url( "/js/kurs.js", __FILE__ ) );
+	wp_localize_script( 'kurs.js', 'cw_kurs', array(
+		'ajaxurl' => admin_url('admin-ajax.php'),
+		'nonce'   => wp_create_nonce('cw_kurs_nonce'),
+	) );
 	wp_enqueue_script( 'cw-admin.js', plugins_url( "/js/cw-admin.js", __FILE__ ) );
 	wp_enqueue_script( 'cal.js', plugins_url( "/js/cal.js", __FILE__ ) );
 	wp_enqueue_script( 'admin-cal.js', plugins_url( "/js/admin_cal.js", __FILE__ ), array('jquery','jquery-ui-draggable','jquery-ui-resizable','jquery-ui-dialog') );
@@ -170,30 +179,62 @@ function cw_start(){
 }
 
 function kurse(){
+	kurs_head(true);
+	show_kurse();
+	echo '</div>';
+}
 
-	if(isset($_GET["action"])){
-		switch($_GET["action"]){
+function cw_kurs_load_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_kurs_nonce', 'nonce');
+	global $wpdb;
+	$kurs = new Kurs($wpdb);
+	$kurs->load(intval($_POST['kid'] ?? 0));
+	if ($kurs->getId() < 0) wp_send_json_error('Kurs nicht gefunden.');
+	wp_send_json_success(array(
+		'id'             => $kurs->getId(),
+		'name'           => $kurs->getName(),
+		'max_teilnehmer' => $kurs->getMaxTeilnehmer(),
+		'show_front'     => $kurs->getShowFront(),
+		'is_open'        => $kurs->getIs_open(),
+		'bild'           => $kurs->getBild(),
+		'beschreibung'   => $kurs->getBeschreibung(),
+	));
+}
 
-			case 'new':
-					new_kurs();
-				break;
+function cw_kurs_save_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_kurs_nonce', 'nonce');
+	global $wpdb;
+	$kid          = intval($_POST['kid'] ?? 0);
+	$name         = sanitize_text_field($_POST['name'] ?? '');
+	$mteil        = intval($_POST['mteil'] ?? 0);
+	$show_front   = empty($_POST['show_front']) ? 0 : 1;
+	$is_open      = empty($_POST['is_open'])    ? 0 : 1;
+	$bild         = esc_url_raw($_POST['bild'] ?? '');
+	$beschreibung = wp_kses_post($_POST['beschreibung'] ?? '');
+	if (empty($name)) wp_send_json_error('Bitte einen Kursnamen angeben.');
+	$kurs = new Kurs($wpdb);
+	if ($kid > 0) $kurs->load($kid);
+	$kurs->setName($name);
+	$kurs->setMaxTeilnehmer($mteil);
+	$kurs->setShowFront($show_front);
+	$kurs->setIs_open($is_open);
+	$kurs->setBild($bild);
+	$kurs->setBeschreibung($beschreibung);
+	if ($kurs->save()) wp_send_json_success();
+	else wp_send_json_error('Fehler beim Speichern.');
+}
 
-			case 'edit':
-					if(isset($_POST["edit"]) || isset($_POST["edit_done"])){ edit_kurs(); }
-					if(isset($_POST["delete"])){ delete_kurs(); }
-				break;
-
-			default:
-				kurs_head(true);
-				show_kurse();
-		}
-	}else{
-		kurs_head(true);
-		show_kurse();
-	}
-
-	echo '</div>
-	';
+function cw_kurs_delete_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_kurs_nonce', 'nonce');
+	global $wpdb;
+	$kid = intval($_POST['kid'] ?? 0);
+	if ($kid <= 1) wp_send_json_error('Der Kurs "Sonstiges" kann nicht gel&ouml;scht werden.');
+	$wpdb->query($wpdb->prepare("DELETE FROM ".$wpdb->prefix."cw_kurse WHERE id=%d", $kid));
+	$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->prefix."cw_user_kurs SET kurs_id=0 WHERE kurs_id=%d OR kurs_id IS NULL", $kid));
+	wp_send_json_success();
 }
 
 function tshirts(){
@@ -224,33 +265,9 @@ function tshirts(){
 }
 
 function program(){
-
-	wp_enqueue_style( 'wp-color-picker' );
-	wp_enqueue_script( 'script_handle', plugins_url('/js/cp.js', __FILE__ ), array( 'wp-color-picker' ), false, true );
-
-	if(isset($_GET["action"])){
-		switch($_GET["action"]){
-
-			case 'new':
-				new_program();
-				break;
-
-			case 'edit':
-				if(isset($_POST["edit"]) || isset($_POST["edit_done"]) || isset($_GET["eid"])){ edit_program(); }
-				if(isset($_POST["delete"])){ delete_program(); }
-				break;
-
-			default:
-				program_head(false);
-				show_program_calendar();
-		}
-	}else{
-		program_head(false);
-		show_program_calendar();
-	}
-
-	echo '</div>
-	';
+	program_head(false);
+	show_program_calendar();
+	echo '</div>';
 }
 
 /* ================================================================
@@ -329,6 +346,62 @@ function cw_cal_create(){
 	$event->save();
 
 	wp_send_json_success(array('id' => $wpdb->insert_id));
+}
+
+function cw_event_load_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_cal_nonce', 'nonce');
+	global $wpdb;
+	$event = new Event($wpdb);
+	$event->load(intval($_POST['eid'] ?? 0));
+	if ($event->getId() < 0) wp_send_json_error('Event nicht gefunden.');
+	wp_send_json_success(array(
+		'id'                => $event->getId(),
+		'event_day'         => $event->getEventDay(),
+		'event_start'       => $event->getEventStart(),
+		'event_end'         => $event->getEventEnd(),
+		'event_name'        => $event->getEventName(),
+		'event_subtext'     => $event->getEventSubtext(),
+		'event_description' => $event->getEventDescription(),
+		'event_color'       => $event->getEventColor(),
+	));
+}
+
+function cw_event_save_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_cal_nonce', 'nonce');
+	global $wpdb;
+	$eid   = intval($_POST['eid']         ?? 0);
+	$day   = intval($_POST['event_day']   ?? 0);
+	$start = intval($_POST['event_start'] ?? 0);
+	$end   = intval($_POST['event_end']   ?? 0);
+	$name  = sanitize_text_field($_POST['event_name']    ?? '');
+	$sub   = sanitize_text_field($_POST['event_subtext'] ?? '');
+	$desc  = wp_kses_post($_POST['event_description']    ?? '');
+	$color = sanitize_hex_color($_POST['event_color']    ?? '') ?: '#d7e7a1';
+	if (empty($name))              wp_send_json_error('Bitte einen Titel angeben.');
+	if ($day < 0 || $day > 5)     wp_send_json_error('Ung&uuml;ltiger Tag.');
+	if ($start < 700 || $start > 2300) wp_send_json_error('Ung&uuml;ltige Startzeit.');
+	if ($end   < 700 || $end   > 2300) wp_send_json_error('Ung&uuml;ltige Endzeit.');
+	if ($end <= $start)            wp_send_json_error('Ende muss nach Start liegen.');
+	$excl = $eid > 0 ? $wpdb->prepare(' AND id <> %d', $eid) : '';
+	$res  = $wpdb->get_row($wpdb->prepare(
+		"SELECT count(*) AS c FROM ".$wpdb->prefix."cw_events
+		 WHERE event_day=%d AND (%d BETWEEN event_start AND event_end-1 OR %d BETWEEN event_start+1 AND event_end)".$excl,
+		$day, $start, $end
+	));
+	if ($res->c >= 1) wp_send_json_error('Das Event &uuml;berschneidet sich mit einem anderen Event.');
+	$event = new Event($wpdb);
+	if ($eid > 0) $event->load($eid);
+	$event->setEventDay($day);
+	$event->setEventStart($start);
+	$event->setEventEnd($end);
+	$event->setEventName($name);
+	$event->setEventSubtext($sub);
+	$event->setEventDescription($desc);
+	$event->setEventColor($color);
+	if ($event->save()) wp_send_json_success();
+	else wp_send_json_error('Fehler beim Speichern.');
 }
 
 function reg_front(){

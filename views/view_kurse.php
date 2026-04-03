@@ -15,7 +15,7 @@ function kurs_head($show_new = false){
 		<h1>Kurse';
 
 	if($show_new) {
-		echo '<a class="page-title-action" href="' . menu_page_url( 'kurse', false ) . '&action=new">Neu erstellen</a></h1>';
+		echo '<button id="cw-new-btn" class="page-title-action">Neu erstellen</button></h1>';
 	}else{
 		echo "</h1>";
 	}
@@ -69,19 +69,16 @@ function show_kurse(){
 						<td data-order="'.$kurs->getTeilnehmer().'">'.$kurs->getTeilnehmer().' / '.$kurs->getMaxTeilnehmer().'</td>
 						<td>'.($kurs->getShowFront()? '<span style="color: #6a6">Ja</span>': '<span style="color: #a66">Nein</span>').'</td>
 						<td>'.($kurs->getIs_open()? '<span style="color: #6a6">offen</span>': '<span style="color: #a66">geschlossen</span>').'</td>
-						<td>
-							<form action="'.menu_page_url('kurse',false).'&action=edit" method="post">
-								<button name="edit" style="border: none; background: transparent;color: #0073aa">
-									<i class="dashicons dashicons-welcome-write-blog"></i>
-								</button>';
+						<td style="display:flex;align-items:center;gap:4px">
+							<button class="cw-edit-btn" data-kid="'.$kurs->getId().'" style="border:none;background:transparent;color:#0073aa;cursor:pointer">
+								<i class="dashicons dashicons-welcome-write-blog"></i>
+							</button>';
 							if($kurs->getId() != 1) {
-								echo '<button name="delete" type="submit" style="margin-left: 10px;border: none; background: transparent;color: #b00" onclick="return confirm(\'Den Kurs \\\'' . $kurs->getName() . '\\\' wirklich l&ouml;schen?\');">
+								echo '<button class="cw-delete-btn" data-kid="'.$kurs->getId().'" data-name="'.esc_attr($kurs->getName()).'" style="border:none;background:transparent;color:#b00;cursor:pointer">
 										<i class="dashicons dashicons-trash"></i>
 									</button>';
 							}
 	                      echo'
-								    <input type="hidden" name="kid" value="'.$kurs->getId().'"/>
-							</form>
 						</td>
 					</tr>
 				';
@@ -92,6 +89,83 @@ function show_kurse(){
 		';
 
 	}
+
+	echo '
+	<!-- Dialog: Neuer Kurs -->
+	<div id="cw-dialog-new" title="Neuen Kurs erstellen" style="display:none">
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th>Kursname:</th>
+					<td><input type="text" id="new-name" class="regular-text" /></td>
+				</tr>
+				<tr>
+					<th>Max. Teilnehmer:</th>
+					<td><input type="number" id="new-mteil" min="0" value="0" style="width:60px" /></td>
+				</tr>
+				<tr>
+					<th>In &Uuml;bersicht anzeigen:</th>
+					<td><input type="checkbox" id="new-show-front" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Anmeldung m&ouml;glich:</th>
+					<td><input type="checkbox" id="new-is-open" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Bild:</th>
+					<td>
+						<input type="text" id="new-bild" class="regular-text" style="display:none" />
+						<input type="button" id="new-bild-btn" class="button" value="Bild ausw&auml;hlen" />
+						<br><img id="new-preimg" src="" height="50" style="margin-top:5px;display:none" />
+					</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top;padding-top:8px">Beschreibung:</th>
+					<td><div id="new-beschreibung" contenteditable="true" style="min-height:120px;border:1px solid #8c8f94;border-radius:4px;padding:8px;background:#fff;overflow-y:auto"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="cw-new-error" class="notice notice-error" style="display:none;margin-top:10px"><p></p></div>
+	</div>
+
+	<!-- Dialog: Kurs bearbeiten -->
+	<div id="cw-dialog-edit" title="Kurs bearbeiten" style="display:none">
+		<input type="hidden" id="edit-kid" />
+		<table class="form-table">
+			<tbody>
+				<tr>
+					<th>Kursname:</th>
+					<td><input type="text" id="edit-name" class="regular-text" /></td>
+				</tr>
+				<tr>
+					<th>Max. Teilnehmer:</th>
+					<td><input type="number" id="edit-mteil" min="0" value="0" style="width:60px" /></td>
+				</tr>
+				<tr>
+					<th>In &Uuml;bersicht anzeigen:</th>
+					<td><input type="checkbox" id="edit-show-front" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Anmeldung m&ouml;glich:</th>
+					<td><input type="checkbox" id="edit-is-open" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Bild:</th>
+					<td>
+						<input type="text" id="edit-bild" class="regular-text" style="display:none" />
+						<input type="button" id="edit-bild-btn" class="button" value="Bild ausw&auml;hlen" />
+						<br><img id="edit-preimg" src="" height="50" style="margin-top:5px" />
+					</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top;padding-top:8px">Beschreibung:</th>
+					<td><div id="edit-beschreibung" contenteditable="true" style="min-height:120px;border:1px solid #8c8f94;border-radius:4px;padding:8px;background:#fff;overflow-y:auto"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="cw-edit-error" class="notice notice-error" style="display:none;margin-top:10px"><p></p></div>
+	</div>
+	';
 
 	echo '</div>';
 }

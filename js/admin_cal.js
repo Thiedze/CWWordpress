@@ -13,14 +13,12 @@ jQuery(document).ready(function ($) {
        Hilfsfunktionen Zeitkonvertierung
        ================================================================ */
 
-    // Integer-Zeit (z.B. 830) → Slot-Index ab 07:00
     function timeToSlot(t) {
         var h = Math.floor(t / 100);
         var m = t % 100;
         return (h * 60 + m - 420) / 30;
     }
 
-    // Slot-Index → Integer-Zeit (z.B. slot 3 → 830)
     function slotToTime(s) {
         var total = 420 + s * 30;
         var h = Math.floor(total / 60);
@@ -28,7 +26,6 @@ jQuery(document).ready(function ($) {
         return h * 100 + m;
     }
 
-    // Integer-Zeit → Anzeigestring "HH:MM"
     function fmtTime(t) {
         var h = Math.floor(t / 100);
         var m = t % 100;
@@ -67,23 +64,139 @@ jQuery(document).ready(function ($) {
     }
 
     /* ================================================================
-       AJAX: Neues Event anlegen
+       AJAX: Event speichern (neu + bearbeiten)
        ================================================================ */
-    function createEvent(day, start, end, name, color) {
+    function saveEvent() {
+        var eid   = parseInt($('#cw-dlg-eid').val()) || 0;
+        var name  = $.trim($('#cw-dlg-name').val());
+
+        if (!name) {
+            $('#cw-dlg-name').css('border-color', '#b00').focus();
+            showDlgError('Bitte einen Titel angeben.');
+            return;
+        }
+        $('#cw-dlg-name').css('border-color', '');
+
+        var start = parseInt($('#cw-dlg-start').val());
+        var end   = parseInt($('#cw-dlg-end').val());
+        if (end <= start) {
+            showDlgError('Ende muss nach Start liegen.');
+            return;
+        }
+
         $.post(cwCal.ajax, {
-            action : 'cw_cal_create',
-            nonce  : cwCal.nonce,
-            day    : day,
-            start  : start,
-            end    : end,
-            name   : name,
-            color  : color
+            action             : 'cw_event_save',
+            nonce              : cwCal.nonce,
+            eid                : eid,
+            event_day          : $('#cw-dlg-day').val(),
+            event_start        : start,
+            event_end          : end,
+            event_name         : name,
+            event_subtext      : $('#cw-dlg-subtext').val(),
+            event_description  : $('#cw-dlg-desc').html(),
+            event_color        : $('#cw-dlg-color').val() || '#d7e7a1'
         }, function (res) {
             if (res.success) {
                 location.reload();
+            } else {
+                showDlgError(res.data || 'Fehler beim Speichern.');
             }
         });
     }
+
+    function showDlgError(msg) {
+        $('#cw-dlg-error p').text(msg);
+        $('#cw-dlg-error').show();
+    }
+
+    /* ================================================================
+       Dialog initialisieren
+       ================================================================ */
+    var $dlg = $('#cw-event-dlg').dialog({
+        autoOpen  : false,
+        modal     : true,
+        width     : 520,
+        resizable : false,
+        open: function () {
+            $('#cw-dlg-error').hide();
+            $('#cw-dlg-name').focus();
+        },
+        buttons: {
+            'Speichern': function () { saveEvent(); },
+            'Abbrechen': function () { $(this).dialog('close'); }
+        }
+    });
+
+    function openDlgNew(day, start, end) {
+        $dlg.dialog('option', 'title', 'Neues Event erstellen');
+        $('#cw-dlg-eid').val(0);
+        $('#cw-dlg-day').val(day !== undefined ? day : 0);
+        $('#cw-dlg-start').val(start !== undefined ? start : 800);
+        $('#cw-dlg-end').val(end !== undefined ? end : 900);
+        $('#cw-dlg-name').val('');
+        $('#cw-dlg-subtext').val('');
+        $('#cw-dlg-color').val('#d7e7a1');
+        $('#cw-dlg-desc').html('');
+        $dlg.dialog('open');
+    }
+
+    /* ================================================================
+       "Neu erstellen"-Button
+       ================================================================ */
+    $('#cw-new-event-btn').on('click', function () {
+        openDlgNew();
+    });
+
+    /* ================================================================
+       Klick auf leere Spalte → neues Event Dialog öffnen
+       ================================================================ */
+    $(document).on('click', '.cw-col', function (e) {
+        if ($(e.target).closest('.cw-event').length) return;
+
+        var $col  = $(this);
+        var day   = parseInt($col.data('day'));
+        var relY  = e.pageY - $('#cw-cal-body').offset().top;
+        var slot  = Math.floor(relY / S);
+        slot = Math.max(0, Math.min(30, slot));
+
+        openDlgNew(day, slotToTime(slot), slotToTime(slot + 2));
+    });
+
+    /* ================================================================
+       Bearbeiten-Button auf Event
+       ================================================================ */
+    $(document).on('click', '.cw-btn-edit', function (e) {
+        e.stopPropagation();
+        var id = parseInt($(this).data('id'));
+        $.post(cwCal.ajax, {
+            action : 'cw_event_load',
+            nonce  : cwCal.nonce,
+            eid    : id
+        }, function (res) {
+            if (!res.success) return;
+            var ev = res.data;
+            $dlg.dialog('option', 'title', 'Event bearbeiten');
+            $('#cw-dlg-eid').val(ev.id);
+            $('#cw-dlg-day').val(ev.event_day);
+            $('#cw-dlg-start').val(ev.event_start);
+            $('#cw-dlg-end').val(ev.event_end);
+            $('#cw-dlg-name').val(ev.event_name);
+            $('#cw-dlg-subtext').val(ev.event_subtext);
+            $('#cw-dlg-color').val(ev.event_color || '#d7e7a1');
+            $('#cw-dlg-desc').html(ev.event_description);
+            $dlg.dialog('open');
+        });
+    });
+
+    /* ================================================================
+       Löschen-Button
+       ================================================================ */
+    $(document).on('click', '.cw-btn-del', function (e) {
+        e.stopPropagation();
+        var $btn = $(this);
+        if (!confirm('Event wirklich löschen?')) return;
+        deleteEvent(parseInt($btn.data('id')), $btn.closest('.cw-event'));
+    });
 
     /* ================================================================
        Draggable initialisieren
@@ -105,7 +218,6 @@ jQuery(document).ready(function ($) {
                 var oldEnd   = parseInt($self.data('end'));
                 var dur      = timeToSlot(oldEnd) - timeToSlot(oldStart);
 
-                // Neue Position berechnen
                 var day  = Math.round((ui.position.left - T) / C);
                 var slot = Math.round(ui.position.top / S);
                 day  = Math.max(0, Math.min(5, day));
@@ -114,13 +226,11 @@ jQuery(document).ready(function ($) {
                 var newStart = slotToTime(slot);
                 var newEnd   = slotToTime(slot + dur);
 
-                // Auf Grid einrasten
                 $self.css({
                     left : (T + day * C + 2) + 'px',
                     top  : (slot * S + 1) + 'px'
                 });
 
-                // Data-Attribute + Zeitanzeige aktualisieren
                 $self.data('day', day).data('start', newStart).data('end', newEnd);
                 $self.find('.cw-event-time').text(fmtTime(newStart) + ' – ' + fmtTime(newEnd));
 
@@ -151,7 +261,6 @@ jQuery(document).ready(function ($) {
                 var slots  = Math.max(1, Math.round(ui.size.height / S));
                 var newEnd = slotToTime(timeToSlot(start) + slots);
 
-                // Höhe exakt einrasten
                 $self.css({ height: (slots * S - 2) + 'px', width: (C - 4) + 'px' });
                 $self.data('end', newEnd);
                 $self.find('.cw-event-time').text(fmtTime(start) + ' – ' + fmtTime(newEnd));
@@ -160,7 +269,6 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        // jQuery UI Resizable setzt intern position:relative – das überschreiben wir zurück
         $ev.css('position', 'absolute');
     }
 
@@ -168,78 +276,6 @@ jQuery(document).ready(function ($) {
     $('.cw-event').each(function () {
         initDraggable($(this));
         initResizable($(this));
-    });
-
-    /* ================================================================
-       Löschen-Button
-       ================================================================ */
-    $(document).on('click', '.cw-btn-del', function (e) {
-        e.stopPropagation();
-        var $btn = $(this);
-        if (!confirm('Event wirklich löschen?')) return;
-        deleteEvent(parseInt($btn.data('id')), $btn.closest('.cw-event'));
-    });
-
-    /* ================================================================
-       Klick auf leere Spalte → neues Event Dialog öffnen
-       ================================================================ */
-    $(document).on('click', '.cw-col', function (e) {
-        if ($(e.target).closest('.cw-event').length) return;
-
-        var $col  = $(this);
-        var day   = parseInt($col.data('day'));
-        var relY  = e.pageY - $('#cw-cal-body').offset().top;
-        var slot  = Math.floor(relY / S);
-        slot = Math.max(0, Math.min(30, slot));   // max slot 30 → 22:00
-
-        $('#cw-new-day').val(day);
-        $('#cw-new-start').val(slotToTime(slot));
-        $('#cw-new-end').val(slotToTime(slot + 2)); // Standard: 1 Stunde
-        $('#cw-new-name').val('');
-
-        $('#cw-new-dlg').dialog('open');
-    });
-
-    /* ================================================================
-       Dialog: Neues Event
-       ================================================================ */
-    $('#cw-new-dlg').dialog({
-        autoOpen  : false,
-        modal     : true,
-        width     : 340,
-        resizable : false,
-        open: function () {
-            $('#cw-new-name').focus();
-        },
-        buttons: {
-            'Erstellen': function () {
-                var name = $.trim($('#cw-new-name').val());
-                if (!name) {
-                    $('#cw-new-name').css('border-color', '#b00').focus();
-                    return;
-                }
-                $('#cw-new-name').css('border-color', '');
-
-                createEvent(
-                    parseInt($('#cw-new-day').val()),
-                    parseInt($('#cw-new-start').val()),
-                    parseInt($('#cw-new-end').val()),
-                    name,
-                    $('#cw-new-color').val() || '#d7e7a1'
-                );
-                $(this).dialog('close');
-            },
-            'Abbrechen': function () {
-                $(this).dialog('close');
-            }
-        }
-    });
-
-    // Enter im Titel-Feld = Erstellen
-    $('#cw-new-name').on('keydown', function (e) {
-        if (e.key === 'Enter') {
-            $('#cw-new-dlg').closest('.ui-dialog').find('button:first').click();
-        }
     });
 
 });

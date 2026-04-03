@@ -123,7 +123,8 @@
 }
 
 .cw-event-btns a,
-.cw-event-btns .cw-btn-del {
+.cw-event-btns .cw-btn-del,
+.cw-event-btns .cw-btn-edit {
     font-size: 13px !important;
     width: 13px !important;
     height: 13px !important;
@@ -133,8 +134,9 @@
     text-decoration: none;
 }
 
-.cw-event-btns a:hover  { color: #0073aa; }
-.cw-btn-del:hover       { color: #b00 !important; }
+.cw-event-btns a:hover      { color: #0073aa; }
+.cw-btn-edit:hover          { color: #0073aa !important; }
+.cw-btn-del:hover           { color: #b00 !important; }
 
 /* ---- Zeitanzeige / Titel / Untertitel ---- */
 .cw-event-time {

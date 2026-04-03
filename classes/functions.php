@@ -217,6 +217,12 @@ function substitue_email_text($db,$text,$teil){
 				case 'gesamt':
 					return $teil->get_to_pay();
 					break;
+
+				case 'letztertagshopbestellung':
+					$cwStart = date_create($opt->getCwStart());
+					$cwStart->modify('-4 weeks');
+					return $cwStart->format('d.m.Y');
+					break;
 			}
 		}
 		,$text);
