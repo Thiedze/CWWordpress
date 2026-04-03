@@ -36,11 +36,18 @@ function show_kurse(){
 		';
 	}else{
 
+		$sum_teil = 0;
+		$sum_max  = 0;
+		foreach ($kurse as $k) {
+			if ($k->getShowFront() && $k->getIs_open()) {
+				$sum_teil += $k->getTeilnehmer();
+				$sum_max  += $k->getMaxTeilnehmer();
+			}
+		}
+
 		echo '
-			<div class="notice notice-info">
-				<p>Sichtbar gibt an, ob dieser Kurs in der Kurs&uuml;bersicht angezeigt werden soll!</p>
-			</div>
-			<table id="kurstable" style="width: 850px" class="widefat striped sortable display">
+			<div style="display:flex;gap:16px;align-items:flex-start;">
+			<table id="kurstable" style="flex:1;" class="widefat striped sortable display">
 				<thead>
 					<tr>
 						<th style="width: 400px;border-right: 1px solid #eaeaea">
@@ -86,6 +93,12 @@ function show_kurse(){
 
 		echo'</tbody>
 			</table>
+			<div class="notice notice-info" style="width:180px;flex-shrink:0;padding:8px 16px;margin:0;">
+				<strong>Belegung (offen &amp; sichtbar):</strong><br />
+				<span style="font-size:1.4em;font-weight:bold">'.$sum_teil.' / '.$sum_max.'</span>
+				<span style="color:#888"> Belegt</span>
+			</div>
+			</div>
 		';
 
 	}

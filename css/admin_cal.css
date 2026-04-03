@@ -28,7 +28,7 @@
 /* ---- Scrollbereich ---- */
 #cw-cal-scroll {
     overflow-y: auto;
-    max-height: 680px;
+    height: calc(100vh - 200px);
     border: 1px solid #ccc;
     border-top: none;
 }

@@ -9,7 +9,8 @@ jQuery(document).ready(function ($) {
     $('#kurstable').DataTable({
         paging:    false,
         info:      false,
-        searching: false
+        searching: false,
+        order:     [[2, 'asc'], [3, 'desc']]
     });
 
     $('#tshirttable').DataTable({
