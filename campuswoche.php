@@ -14,7 +14,6 @@ define( 'CW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once(CW_PLUGIN_DIR.'db/db.php');
 require_once(CW_PLUGIN_DIR.'classes/Teilnehmer.php');
-require_once(CW_PLUGIN_DIR.'classes/Shirt.php');
 require_once(CW_PLUGIN_DIR.'classes/Kurs.php');
 require_once(CW_PLUGIN_DIR.'classes/Options.php');
 require_once(CW_PLUGIN_DIR.'classes/Event.php');
@@ -23,7 +22,6 @@ require_once(CW_PLUGIN_DIR.'classes/Autoloader.php');
 require_once(CW_PLUGIN_DIR.'classes/Export_XLS.php');
 require_once(CW_PLUGIN_DIR.'views/view_options.php');
 require_once(CW_PLUGIN_DIR.'views/view_kurse.php');
-require_once(CW_PLUGIN_DIR.'views/view_shirts.php');
 require_once(CW_PLUGIN_DIR.'views/view_kurs_user.php');
 require_once(CW_PLUGIN_DIR.'views/view_teilnehmer.php');
 require_once(CW_PLUGIN_DIR.'views/view_front_register.php');
@@ -158,7 +156,6 @@ function plugin_deactivate(){
 function cwplugin(){
 	add_menu_page('Campuswoche','Campuswoche','cw_allow','cwmain','cw_start',plugin_dir_url(__FILE__).'img/cicon.png');
 	add_submenu_page('cwmain','Kurse','Kurse','cw_allow','kurse','kurse');
-	add_submenu_page('cwmain','T-Shirts','T-Shirts','cw_allow','tshirts','tshirts');
     add_submenu_page('cwmain','Teilnehmer Kurse','Teilnehmer Kurse','cw_allow','tkurs','tkurs');
 	add_submenu_page('cwmain','Teilnehmerliste','Teilnehmerliste','cw_allow','teilnehmer','teilnehmer');
 	add_submenu_page('cwmain','Programm','Programm','cw_allow','program','program');
@@ -237,32 +234,6 @@ function cw_kurs_delete_handler() {
 	wp_send_json_success();
 }
 
-function tshirts(){
-
-	if(isset($_GET["action"])){
-		switch($_GET["action"]){
-
-			case 'new':
-				new_tshirt();
-				break;
-
-			case 'edit':
-				if(isset($_POST["edit"]) || isset($_POST["edit_done"])){ edit_tshirt(); }
-				if(isset($_POST["delete"])){ delete_tshirt(); }
-				break;
-
-			default:
-				tshirt_head(true);
-				show_tshirts();
-		}
-	}else{
-		tshirt_head(true);
-		show_tshirts();
-	}
-
-	echo '</div>
-	';
-}
 
 function program(){
 	program_head(false);
@@ -417,11 +388,6 @@ function ad_init(){
 		if(isset($_GET["action"])){
 			if($_GET["action"] == "export"){
 				switch($_GET["page"]){
-
-					case 'tshirts':
-						$export = new Export_XLS($wpdb);
-						$export->export_shirts();
-					break;
 
 					case 'teilnehmer':
 						$export = new Export_XLS($wpdb);

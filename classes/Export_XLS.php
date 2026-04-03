@@ -18,45 +18,6 @@ class Export_XLS {
 		$this->abc = range( 'A', 'Z' );
 	}
 
-	/**
-	 * Exportiert die T-Shirt-Liste
-	 */
-	public function export_shirts() {
-
-		$shirtlist = $this->db->get_results( "SELECT wcs.name,wcs.size,count(wcus.user_id) as anzahl 
-								FROM wp_cw_user_shirt wcus 
-							    LEFT JOIN wp_cw_shirt wcs ON wcus.shirt_id=wcs.id 
-							GROUP BY wcs.name,wcs.size
-							ORDER BY wcs.name,wcs.size" );
-
-		$phpx = new PhpOffice\PhpSpreadsheet\Spreadsheet();
-		$phpx->getProperties()->setTitle( 'T-Shirts Campuswoche' );
-
-		$sheet = $phpx->getActiveSheet();
-		$count = 1;
-
-		$sheet->setCellValue( 'A1', "Bezeichnung", null )->getStyle('A1')->getFont()->setBold( true );
-		$sheet->setCellValue( 'B1', "Größe", null )->getStyle('B1')->getFont()->setBold( true );
-		$sheet->setCellValue( 'C1', "Menge", null )->getStyle('C1')->getFont()->setBold( true );
-
-		if ( $shirtlist ) {
-			foreach ( $shirtlist as $shirt ) {
-				$count ++;
-
-				if ( $count % 2 == 1 ) {
-					$sheet->getStyle( 'A'.$count.':C'.$count )->getFill()->setFillType( \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID )->getStartColor()->setARGB( 'FFE0E0E0' );
-				}
-
-				$sheet->setCellValue( 'A'.$count, $shirt->name );
-				$sheet->setCellValue( 'B'.$count, $shirt->size );
-				$sheet->setCellValue( 'C'.$count, $shirt->anzahl );
-			}
-		}
-
-		$this->download_file( $phpx, "Campuswoche_Shirts.xlsx" );
-
-	}
-
 	public function export_kurs_teilnehmer() {
 		$kurse = get_all_kurse();
 		$first = true;
@@ -155,15 +116,13 @@ class Export_XLS {
 			$sheet->setCellValue( 'H1', "Alter", null )->getStyle('H1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'I1', "(Hoch-)Schule", null )->getStyle('I1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'J1', "Kurs", null )->getStyle('J1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'K1', "Shirt", null )->getStyle('K1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'L1', "Essen", null )->getStyle('L1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'M1', "Sonstiges", null )->getStyle('M1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'N1', "Aufmerksam durch:", null )->getStyle('N1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'O1', "Registrierdatum", null )->getStyle('O1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'P1', "Schüler/Student", null )->getStyle('P1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'Q1', "Gesamtbetrag", null )->getStyle('Q1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'R1', "Teilnahme bezahlt?", null )->getStyle('R1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'S1', "T-Shirt bezahlt?", null )->getStyle('S1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'K1', "Essen", null )->getStyle('K1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'L1', "Sonstiges", null )->getStyle('L1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'M1', "Aufmerksam durch:", null )->getStyle('M1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'N1', "Registrierdatum", null )->getStyle('N1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'O1', "Schüler/Student", null )->getStyle('O1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'P1', "Gesamtbetrag", null )->getStyle('P1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'Q1', "Teilnahme bezahlt?", null )->getStyle('Q1')->getFont()->setBold( true );
 
 			$count = 1;
 
@@ -189,36 +148,25 @@ class Export_XLS {
 				$sheet->setCellValue( 'H'.$count, calc_age( $teil->getGeb() ) );
 				$sheet->setCellValue( 'I'.$count, $teil->getSchule() );
 				$sheet->setCellValue( 'J'.$count, $teil->getKurs()->getName() );
-				$sheet->setCellValue( 'K'.$count, $teil->getTshirt()->getName()." ".$teil->getTshirt()->getSize() );
-				$sheet->setCellValue( 'L'.$count, $teil->getEssen() );
-				$sheet->setCellValue( 'M'.$count, $teil->getSonstiges() );
-				$sheet->setCellValue( 'N'.$count, $teil->getGotit() );
+				$sheet->setCellValue( 'K'.$count, $teil->getEssen() );
+				$sheet->setCellValue( 'L'.$count, $teil->getSonstiges() );
+				$sheet->setCellValue( 'M'.$count, $teil->getGotit() );
 
-				$sheet->setCellValue( 'O'.$count, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel( strtotime( $teil->getRegdate() ) ) );
+				$sheet->setCellValue( 'N'.$count, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel( strtotime( $teil->getRegdate() ) ) );
 
-				$sheet->getStyle( 'O'.$count )
+				$sheet->getStyle( 'N'.$count )
 				      ->getNumberFormat()
 				      ->setFormatCode( 'dd.mm.yyyy HH:mm:ss' );
 
+				$sheet->setCellValue( 'O'.$count, ( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ) );
+				$sheet->setCellValue( 'P'.$count, $teil->get_to_pay() );
+				$sheet->setCellValue( 'Q'.$count, ( $teil->getPayed() == 1 ? "Ja" : "Nein" ) );
 
-				$sheet->setCellValue( 'P'.$count, ( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ) );
-				$sheet->setCellValue( 'Q'.$count, $teil->get_to_pay() );
-
-
-				$sheet->setCellValue( 'R'.$count, ( $teil->getPayed() == 1 ? "Ja" : "Nein" ) );
-
-				if ( $teil->getTshirt()->getName() == "" ) {
-					$sheet->setCellValue( 'S'.$count, " " );
-				} else {
-					$sheet->setCellValue( 'S'.$count, ( $teil->getShirtPayed() == 1 ? "Ja" : "Nein" ) );
-				}
-
+				$sheet->getStyle('O'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 				$sheet->getStyle('P'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 				$sheet->getStyle('Q'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-				$sheet->getStyle('R'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-				$sheet->getStyle('S'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
-				$sheet->setAutoFilter('A1:S1');
+				$sheet->setAutoFilter('A1:Q1');
 
 				$sheet->getPageSetup()->setFitToWidth(0)->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
 

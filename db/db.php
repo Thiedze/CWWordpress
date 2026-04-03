@@ -36,7 +36,6 @@ function init_database($db){
 		to_pay int(4),
 		paytype int(1),
 		payed int(1),
-		shirt_payed int(1),
 		PRIMARY KEY  (id)
 	) ".$db->get_charset_collate();
 
@@ -52,20 +51,6 @@ function init_database($db){
 		PRIMARY KEY  (id)
 	) ".$db->get_charset_collate();
 
-	$tshirt = "CREATE TABLE ".$db->prefix."cw_shirt (
-		id int(11) NOT NULL AUTO_INCREMENT,
-		name varchar(255) NOT NULL,
-		size varchar(10) NOT NULL,
-		preis int(5),
-		PRIMARY KEY  (id)
-	) ".$db->get_charset_collate();
-
-	$shirt_to_user = "CREATE TABLE ".$db->prefix."cw_user_shirt (
-		user_id int(11) NOT NULL,
-		shirt_id int(11) NOT NULL,
-		PRIMARY KEY  (user_id)
-	) ".$db->get_charset_collate();
-
 	$kurs_to_user = "CREATE TABLE ".$db->prefix."cw_user_kurs (
 		user_id int(11) NOT NULL,
 		kurs_id int(11) NOT NULL,
@@ -74,11 +59,10 @@ function init_database($db){
 
 	$cw_options = "CREATE TABLE ".$db->prefix."cw_options (
 		register_enabled int(1) NOT NULL,
-		shirt_enabled int(1) NOT NULL,
+		register_logged_in_only int(1) NOT NULL DEFAULT 0,
 		teilnahme_preis int(3) NOT NULL,
 		teilnahme_preis_alumni int(3) NOT NULL DEFAULT 80,
 		text_closed TEXT,
-		text_shirt TEXT,
 		text_email TEXT,
 		text_register TEXT,
 		cw_start DATE,
@@ -99,8 +83,6 @@ function init_database($db){
 
 	dbDelta($userdb);
 	dbDelta($kursdb);
-	dbDelta($tshirt);
-	dbDelta($shirt_to_user);
 	dbDelta($kurs_to_user);
 	dbDelta($cw_options);
 	dbDelta($cw_events);
@@ -129,7 +111,7 @@ function init_database($db){
 	$res = $db->get_row("SELECT count(*) as c FROM ".$db->prefix."cw_options");
 
 	if($res->c == 0){
-		$db->query("INSERT INTO ".$db->prefix."cw_options VALUES(0,0,50,80,'closed','','','','".date("Y-m-d",time())."','".date("Y-m-d",time())."')");
+		$db->query("INSERT INTO ".$db->prefix."cw_options VALUES(0,50,80,'closed','','','".date("Y-m-d",time())."','".date("Y-m-d",time())."')");
 	}
 
 

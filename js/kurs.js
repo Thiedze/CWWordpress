@@ -13,12 +13,6 @@ jQuery(document).ready(function ($) {
         order:     [[2, 'asc'], [3, 'desc']]
     });
 
-    $('#tshirttable').DataTable({
-        paging:    false,
-        info:      false,
-        searching: false
-    });
-
     // ---- Dialog: Neuer Kurs ----
     var $dialogNew = $('#cw-dialog-new').dialog({
         autoOpen: false,

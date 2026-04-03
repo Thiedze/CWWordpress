@@ -10,15 +10,13 @@ class Options {
 
 	private $register_enabled;
 
-	private $shirt_enabled;
+	private $register_logged_in_only;
 
 	private $teilnahme_preis;
 
 	private $teilnahme_preis_alumni;
 
 	private $text_closed;
-
-	private $text_shirt;
 
 	private $cw_start;
 
@@ -58,13 +56,12 @@ class Options {
 
 	public function save(){
 		$query = $this->db->prepare(
-			"UPDATE ".$this->db->prefix."cw_options SET register_enabled=%d,shirt_enabled=%d,teilnahme_preis=%d,teilnahme_preis_alumni=%d,text_closed=%s,text_shirt=%s,cw_start=%s,register_start=%s,text_email=%s,text_register=%s",
+			"UPDATE ".$this->db->prefix."cw_options SET register_enabled=%d,register_logged_in_only=%d,teilnahme_preis=%d,teilnahme_preis_alumni=%d,text_closed=%s,cw_start=%s,register_start=%s,text_email=%s,text_register=%s",
 			$this->register_enabled,
-			$this->shirt_enabled,
+			$this->register_logged_in_only,
 			$this->teilnahme_preis,
 			$this->teilnahme_preis_alumni,
 			$this->text_closed,
-			$this->text_shirt,
 			$this->cw_start,
 			$this->register_start,
 			$this->text_email,
@@ -82,8 +79,12 @@ class Options {
 		return $this->register_enabled;
 	}
 
-	public function getShirtEnabled() {
-		return $this->shirt_enabled;
+	public function getRegisterLoggedInOnly() {
+		return $this->register_logged_in_only;
+	}
+
+	public function setRegisterLoggedInOnly( $val ) {
+		$this->register_logged_in_only = $val;
 	}
 
 	public function getTeilnahmePreis() {
@@ -92,10 +93,6 @@ class Options {
 
 	public function getTextClosed() {
 		return stripslashes($this->text_closed);
-	}
-
-	public function getTextShirt() {
-		return stripslashes($this->text_shirt);
 	}
 
 	public function getCwStart() {
@@ -125,13 +122,6 @@ class Options {
 	}
 
 	/**
-	 * @param mixed $shirt_enabled
-	 */
-	public function setShirtEnabled( $shirt_enabled ) {
-		$this->shirt_enabled = $shirt_enabled;
-	}
-
-	/**
 	 * @param mixed $teilnahme_preis
 	 */
 	public function setTeilnahmePreis( $teilnahme_preis ) {
@@ -149,13 +139,6 @@ class Options {
 	 */
 	public function setTextClosed( $text_closed ) {
 		$this->text_closed = $text_closed;
-	}
-
-	/**
-	 * @param mixed $text_shirt
-	 */
-	public function setTextShirt( $text_shirt ) {
-		$this->text_shirt = $text_shirt;
 	}
 
 	/**

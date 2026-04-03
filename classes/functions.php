@@ -30,29 +30,6 @@ function get_all_kurse($only_active=false){
 
 }
 
-/**
- * @return Shirt[]|null
- */
-function get_all_tshirts(){
-	global $wpdb;
-	$ret = array();
-	$i = -1;
-
-	if($obj = $wpdb->get_results("SELECT id FROM ".$wpdb->prefix."cw_shirt ORDER BY name ASC")){
-
-		foreach ( $obj as $res ) {
-			$i++;
-			$ret[$i] = new Shirt($wpdb);
-			$ret[$i]->load($res->id);
-		}
-
-		return $ret;
-
-	}else{
-		return null;
-	}
-
-}
 
 /**
  * @return Event[]|null
@@ -202,16 +179,8 @@ function substitue_email_text($db,$text,$teil){
 					return ($teil->get_paytype() == 1 ? $opt->getTeilnahmePreis() : $opt->get_teilnahme_preis_alumni());
 					break;
 
-				case 'betragshirt':
-					return $teil->getTshirt()->getPreis();
-					break;
-
 				case 'kurs':
 					return $teil->getKurs()->getName();
-					break;
-
-				case 'shirt':
-					return (strlen($teil->getTshirt()->getName()) > 0 ? $teil->getTshirt()->getName().' '.$teil->getTshirt()->getSize(): 'Kein T-Shirt');
 					break;
 
 				case 'gesamt':

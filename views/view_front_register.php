@@ -10,7 +10,6 @@ session_start();
 function register() {
 	global $wpdb;
 	$kurse   = get_all_kurse();
-	$shirts  = get_all_tshirts();
 	$options = new Options( $wpdb );
 	$options->load();
 	$month     = array(
@@ -47,16 +46,23 @@ function register() {
 		';
 
 		return $ret;
-	} else {
-		if ( strtotime( $options->getRegisterStart() )>strtotime( 'now' ) ) {
-			$ret .= '
-				<div>
-				'.nl2br( $options->getTextClosed() ).'
-				</div>
-			';
+	}
 
-			return $ret;
-		}
+	$start_reached = strtotime( $options->getRegisterStart() ) <= strtotime( 'now' );
+
+	// Startdatum erreicht → Formular für alle anzeigen
+	if ( $start_reached ) {
+		// weiter zum Formular
+	} elseif ( $options->getRegisterLoggedInOnly() == 1 && is_user_logged_in() ) {
+		// Startdatum noch nicht erreicht, aber eingeloggt + Option aktiv → trotzdem Formular
+	} else {
+		// Startdatum noch nicht erreicht → geschlossene Meldung
+		$ret .= '
+			<div>
+			'.nl2br( $options->getTextClosed() ).'
+			</div>
+		';
+		return $ret;
 	}
 
 	/**
@@ -188,25 +194,6 @@ function register() {
 			}
 		}
 
-		if ( $options->getShirtEnabled() == 1 ) {
-			if ( isset( $_POST["shirt"] ) ) {
-				$is_in = false;
-				foreach ( $shirts as $shirt ) {
-					if ( $_POST["shirt"] == $shirt->getId() ) {
-						$is_in = true;
-						break;
-					}
-				}
-
-				if ( !$is_in && $_POST["shirt"] != "-1" ) {
-					$error     = true;
-					$error_msg .= '<li>Das gew&auml;hlte T-Shirt existiert nicht</li>';
-				}
-			}
-		} else {
-			unset( $_POST["shirt"] );
-		}
-
 		if ( !isset( $_POST["food"] ) ) {
 			$error     = true;
 			$error_msg .= '<li>Bitte w&auml;hle dein Essen</li>';
@@ -268,20 +255,9 @@ function register() {
 			';
 		} else {
 
-
-			/**
-			 * Scheiß Datumsangaben :(
-			 * Erst einmal den Scheiß formatieren
-			 */
-
 			$geb = $_POST["gby"].'-'.( $_POST["gbm"]<10 ? '0'.$_POST["gbm"] : $_POST["gbm"] ).'-'.( $_POST["gbd"]<10 ? '0'.$_POST["gbd"] : $_POST["gbd"] );
 
 			$teilnehmer = new Teilnehmer( $wpdb );
-
-			$regshirt = new Shirt( $wpdb );
-			if ( $regshirt->load( $_POST["shirt"] ) ) {
-				$teilnehmer->setTshirt( $regshirt );
-			}
 
 			$teilnehmer->setVorname( $_POST["vorname"] );
 			$teilnehmer->setNachname( $_POST["nachname"] );
@@ -297,7 +273,7 @@ function register() {
 			$teilnehmer->setUuid( sha1( uniqid( "CW", true ) ) );
 			$teilnehmer->set_paytype( $_POST["paytype"] );
 			$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
-			$teilnehmer->set_to_pay( $tnp + $teilnehmer->getTshirt()->getPreis() );
+			$teilnehmer->set_to_pay( $tnp );
 			$teilnehmer->save();
 			$teilnehmer->get_id_from_uuid();
 
@@ -305,21 +281,14 @@ function register() {
 			$regkurs->load( $_POST["kurs"] );
 			$teilnehmer->setKurs( $regkurs );
 			$teilnehmer->setPayed( 0 );
-			$teilnehmer->setShirtPayed( 0 );
 
 			$teilnehmer->save();
-
-			/**
-			 * So der Teilnehmer ist gespeichert Jetzt muss noch die Mail rein
-			 * FIXME: ES FEHLT DIE MAIL!!!
-			 */
-
 
 			$ret = '
 				<div>
 					<h4 style="font-weight: bold">Vielen Dank f&uuml;r deine Anmeldung</h4>
 					<p>
-						Die Gesamtkosten f&uuml;r die Teilnahme betragen <b>'.( $tnp + $teilnehmer->getTshirt()->getPreis() ).'</b>&euro;<br />
+						Die Gesamtkosten f&uuml;r die Teilnahme betragen <b>'.$tnp.'</b>&euro;<br />
 						Du erh&auml;ltst von uns eine EMail mit allen weiteren Informationen.<br />
 						Falls Du keine EMail von uns bekommen hast, gucke bitte in deinen SPAM-Ordner oder schreibe uns!<br />
 					</p>
@@ -342,10 +311,6 @@ function register() {
 
 	} else {
 
-		/**
-		 * Nur eine Definition, falls noch nichts gesendet wurde und damit das WP-Debug nicht so rumschreit.
-		 */
-
 		$_POST["vorname"]     = null;
 		$_POST["nachname"]    = null;
 		$_POST["email"]       = null;
@@ -358,7 +323,6 @@ function register() {
 		$_POST["gby"]         = null;
 		$_POST["schule"]      = null;
 		$_POST["kurs"]        = null;
-		$_POST["shirt"]       = null;
 		$_POST["food"]        = null;
 		$_POST["gotit"]       = null;
 		$_POST["food_sonst"]  = null;
@@ -367,11 +331,7 @@ function register() {
 		$_POST["paytype"]     = null;
 	}
 
-	/**
-	 *
-	 */
-	$kurse  = get_all_kurse();
-	$shirts = get_all_tshirts();
+	$kurse = get_all_kurse();
 
 	if(strlen(trim($options->get_text_register())) > 0){
 		$register_text = str_ireplace(
@@ -385,32 +345,32 @@ function register() {
 	$ret .= '
 	<form action="" method="post">
 		<div class="register col-md-7 col-sm-12 col-xs-12" style="height: auto;overflow: auto;clear: both">
-		
+
 			<div>
 				<span>Vorname:</span><br />
 				<input type="text" name="vorname" value="'.$_POST["vorname"].'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>Nachname:</span><br />
 				<input type="text" name="nachname" value="'.$_POST["nachname"].'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>EMail:</span><br />
 				<input type="email" name="email" value="'.$_POST["email"].'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>EMail wiederholen:</span><br />
 				<input type="email" name="emailw" value="'.$_POST["emailw"].'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>Stra&szlig;e &amp; Hausnummer:</span><br />
 				<input type="text" name="strasse" value="'.$_POST["strasse"].'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>PLZ / Ort:</span><br />
 				<div style="width: 100%;">
@@ -423,7 +383,7 @@ function register() {
 					</div>
 				</div>
 			</div>
-		
+
 			<div>
 				<span>Geburtstag:</span><br />
 				<select name="gbd">';
@@ -450,20 +410,20 @@ function register() {
 			</div>
 
 			<div>
-				<span>Ich bin:</span><br />			
+				<span>Ich bin:</span><br />
 				<input type="radio" name="paytype" value="1" '.( $_POST["paytype"] == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler/Student (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
 				<input type="radio" name="paytype" value="2" '.( $_POST["paytype"] == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.$options->get_teilnahme_preis_alumni().'€</b>)
 				<div id="paytype-warning" style="display:none;color:#900;font-weight:bold;margin-top:5px">
 					Bitte w&auml;hle aus, ob du Sch&uuml;ler/Student oder Alumni bist.
 				</div>
 			</div>
-			
+
 			<div>
 				<span>(Hoch-)Schule:</span><br />
 				<input type="text" required="required" name="schule" value="'.$_POST["schule"].'"/>
 				<div style="font-size: 0.8rem !important; font-style: normal">Falls Du kein Schüler/Student bist trage hier z.B. deine Arbeitsst&auml;tte ein</div>
 			</div>
-			
+
 			<div>
 				<span>W&auml;hle deinen Kurs:</span><br />
 				<select style="width: 100%" name="kurs">';
@@ -474,39 +434,10 @@ function register() {
 		}
 	}
 
-	$ret .= '</select>	
+	$ret .= '</select>
 			</div>';
 
-	if ( $options->getShirtEnabled() == 1 ) {
-		$cwStart = date_create($options->getCwStart());
-		$cwStart->modify('-4 weeks');
-		$shirtText = str_ireplace('{{lezterTagShopBestellung}}', $cwStart->format('d.m.Y'), $options->getTextShirt());
-		$ret .= '
-			<div>
-				<span>W&auml;hle dein T-Shirt:</span>
-				<p style="color: #0076aa;padding: 2px;">'.$shirtText.'</p>
-				<select style="width: 100%" title="'.$shirtText.'" name="shirt">
-				<option value="-1">Kein T-Shirt</option>
-				';
-
-
-		foreach ( $shirts as $shirt ) {
-			$ret .= '<option value="'.$shirt->getId().'" '.( $shirt->getId() == $_POST["shirt"] ? 'selected="selected"' : '' ).' >'.$shirt->getName().' '.$shirt->getSize().'  ( + '.$shirt->getPreis().'&euro; )</option>';
-		}
-
-		$ret .= '</select>	
-			</div>';
-	} else {
-		$ret .= '
-				<div>
-					<span>W&auml;hle dein T-Shirt:</span><br />
-					<i style="color: #0076aa;">Es ist k&ouml;nnen keine T-Shirts mehr mitbestellt werden</i>
-				</div>
-			';
-
-	}
-
-	$ret .= '			
+	$ret .= '
 			<div>
 				<span>Ich bin:</span><br />
 				<input type="radio" name="food" value="Kein Vegetarier" '.( $_POST["food"] == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein Vegetarier <br />
@@ -514,8 +445,8 @@ function register() {
 				<input type="radio" name="food" value="Veganer" '.( $_POST["food"] == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer <br />
 				<input type="radio" name="food" value="2"'.( $_POST["food"] == "2" ? 'checked="checked"' : '' ).'/> Sonstiges:
 				<input type="text" name="food_sonst" value="'.$_POST["food_sonst"].'"/>
-			</div>	
-						
+			</div>
+
 			<div>
 				<span>Ich kenne die Campuswoche:</span><br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Flyer/Plakate" ? 'checked="checked"' : '' ).' value="Flyer/Plakate" required="required"/>&nbsp;...von Flyern / Plakaten<br />
@@ -526,13 +457,13 @@ function register() {
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "RT-Labor" ? 'checked="checked"' : '' ).'value="RT-Labor"/>&nbsp;...vom RT-Labor<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "6" ? 'checked="checked"' : '' ).'value="6"/>&nbsp;...von anderer Quelle<br />
 				<input type="text" name="gotit_sonst" value="'.$_POST["gotit_sonst"].'"/>
-			</div>	
-			
+			</div>
+
 			<div>
 				<span>Sonstiges und Anmerkungen:</span>
 				<textarea style="width: 100%" name="sonstiges">'.$_POST["sonstiges"].'</textarea>
 			</div>
-			
+
 			<div>
 				<span>Bitte löse die Rechnung im Captcha:</span>
 				<div style="width: 100%;">
@@ -543,9 +474,9 @@ function register() {
 						<div style="margin-left: 140px;width: 100px;">
 							<input type="text" name="captcha" value="" required="required"/>
 						</div>
-				</div>					
+				</div>
 			</div>
-						
+
 		</div>
 			<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
 				<p>&nbsp;</p>
@@ -564,7 +495,7 @@ function register() {
 				<br />
 				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900">
 					<input type="checkbox" required="required" name="check3" value="ok"/>&nbsp;
-					Den Teilnahmebetrag von <span id="tnb"></span>&euro; (+ Extrabetr&auml;ge f&uuml;r gew&auml;hlte Shirts) werde ich umgehend &uuml;berweisen.
+					Den Teilnahmebetrag von <span id="tnb"></span>&euro; werde ich umgehend &uuml;berweisen.
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
@@ -573,14 +504,12 @@ function register() {
 			<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
 				<input type="submit" id="btn-registerme" name="registerme" value="Anmelden-&gt;" style="float: right"/>
 			</div>
-			
+
 			<input type="hidden" id="pt1" value="'.$options->getTeilnahmePreis().'" />
 			<input type="hidden" id="pt2" value="'.$options->get_teilnahme_preis_alumni().'" />
 			<input type="hidden" id="cw-start" value="'.$options->getCwStart().'" />
 	</form>
 	';
-
-	//$ret = str_replace('required="required"','',$ret);
 
 	return $ret;
 

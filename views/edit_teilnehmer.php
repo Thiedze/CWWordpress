@@ -10,7 +10,6 @@ function edit_teilnehmer( $id ) {
 
 	global $wpdb;
 	$kurse   = get_all_kurse();
-	$shirts  = get_all_tshirts();
 	$options = new Options( $wpdb );
 	$options->load();
 	$month = array(
@@ -126,21 +125,6 @@ function edit_teilnehmer( $id ) {
 
 		$ret .= '
 			<div>
-				<span>W&auml;hle dein T-Shirt:</span>
-				<!--<p style="color: #0076aa;padding: 2px;">'.$options->getTextShirt().'</p>-->
-				<select style="width: 100%" title="'.$options->getTextShirt().'" name="shirt" id="reg_shirt" >
-				<option value="-1">Kein T-Shirt</option>
-				';
-
-		foreach ( $shirts as $shirt ) {
-			$ret .= '<option value="'.$shirt->getId().'" '.( $shirt->getId() == $teilnehmer->getTshirt()->getId() ? 'selected="selected"' : '' ).' >'.$shirt->getName().' '.$shirt->getSize().'  ( + '.$shirt->getPreis().'&euro; )</option>';
-		}
-
-		$ret .= '</select>	
-			</div>';
-
-		$ret .= '			
-			<div>
 				<span>Ich bin:</span><br />
 				<input type="radio" name="food" value="Kein Vegetarier" '.( $teilnehmer->getEssen() == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein Vegetarier <br />
 				<input type="radio" name="food" value="Vegetarier" '.( $teilnehmer->getEssen() == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier <br />
@@ -168,11 +152,6 @@ function edit_teilnehmer( $id ) {
 			<div>
 				<input type="checkbox" name="payed" value="1" id="reg_payed" '.( $teilnehmer->getPayed() ? 'checked="checked"' : '' ).' style="float: right; margin-right: 200px;margin-top: 3px;"/>
 			    <span style="margin-right: 15px;float: left">Teilnahme bezahlt?</span>
-			</div>
-			
-			<div>
-				<input type="checkbox" name="shirt_payed" id="reg_shirt_payed" value="1" '.( $teilnehmer->getShirtPayed() ? 'checked="checked"' : '' ).' style="float: right; margin-right: 200px;margin-top: 3px;"/>
-			    <span style="margin-right: 15px;float: left">TShirt bezahlt?</span>			    
 			</div>
 			
 			<input type="hidden" name="id" id="reg_id" value="'.$teilnehmer->getId().'" />
@@ -214,20 +193,9 @@ function save_edit() {
 		$teilnehmer->setSonstiges( $_POST["sonstiges"] );
 		$teilnehmer->setPayed( ( isset( $_POST["payed"] ) ? $_POST["payed"] : 0 ) );
 		$teilnehmer->set_paytype( $_POST["paytype"] );
-		$teilnehmer->setShirtPayed( ( isset( $_POST["shirt_payed"] ) ? $_POST['shirt_payed'] : 0 ) );
-
-
-		$regshirt = new Shirt( $wpdb );
-		if ( $regshirt->load( $_POST["shirt"] ) ) {
-			$teilnehmer->setTshirt( $regshirt );
-		} else {
-			$teilnehmer->setTshirt( null );
-		}
 
 		$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
-		$tnp += $teilnehmer->getTshirt()->getPreis();
 		$teilnehmer->set_to_pay( $tnp );
-
 
 		$regkurs = new Kurs( $wpdb );
 		$regkurs->load( $_POST["kurs"] );

@@ -20,7 +20,6 @@ function teilnehmer(){
 				if(isset($_POST['del_csrf'])){
 					if($_POST['del_csrf'] === $_SESSION['csrf']){
 						try{
-							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user_shirt');
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user_kurs');
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user');
 							echo '<div class="notice notice-success inline">
@@ -96,7 +95,6 @@ function teilnehmer(){
 							<th>Kurs</th>
 							<th>Essen</th>
 							<th>Sonstiges</th>
-							<th>Shirt</th>
 							<th>Zu Bezahlen</th>
 							<th>Registrierdatum</th>
 							
@@ -129,14 +127,6 @@ function teilnehmer(){
                                 echo '<img title="Noch nicht Bezahlt" src="'.plugin_dir_url(__FILE__).'../img/money.png'.'" style="-webkit-filter: grayscale(100%); filter: grayscale(100%);"/>';
                             }
 
-                            if($t->getTshirt()->getName() != "") {
-                                if ($t->getShirtPayed() == 1) {
-                                    echo '<img title="T-Shirt bezahlt" src="' . plugin_dir_url(__FILE__) . '../img/shirt.png' . '"/>';
-                                } else {
-                                    echo '<img title="T-Shirt noch nicht bezahlt" src="' . plugin_dir_url(__FILE__) . '../img/shirt.png' . '" style="-webkit-filter: grayscale(100%); filter: grayscale(100%);"/>';
-                                }
-                            }
-
 					echo'   </td>
 							<td>'.$t->getNachname().'</td>
 							<td>'.$t->getVorname().'</td>
@@ -148,7 +138,6 @@ function teilnehmer(){
 							<td>'.($t->getKurs() !== null ? $t->getKurs()->getName() : "Kein Kurs").'</td>
 							<td>'.$t->getEssen().'</td>
 							<td '.(strlen(trim($t->getSonstiges())) > 16 ? 'datatype="tooltip" title="'.htmlentities($t->getSonstiges()).'"' : '').'>'.(strlen(trim($t->getSonstiges())) > 16 ? htmlentities(substr($t->getSonstiges(),0,15)).'...' : htmlentities($t->getSonstiges())).'</td>
-							<td>'.$t->getTshirt()->getName().' '.$t->getTshirt()->getSize().'</td>
 							<td>'.$t->get_to_pay().'&euro;</td>
 							<td data-order="'.strtotime($t->getRegdate()).'">'.date("d.m.Y H:i:s",strtotime($t->getRegdate())).'</td>
 							

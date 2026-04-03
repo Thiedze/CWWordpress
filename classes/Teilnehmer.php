@@ -38,16 +38,9 @@ class Teilnehmer {
 
     private $payed;
 
-    private $shirt_payed;
-
 	private $to_pay;
 
 	private $paytype;
-
-	/**
-	 * @var Shirt
-	 */
-	private $tshirt;
 
 	/**
 	 * @var Kurs
@@ -76,7 +69,7 @@ class Teilnehmer {
 	public function save(){
 		if($this->id < 0){
 			$query = $this->db->prepare(
-				"INSERT INTO ".$this->db->prefix."cw_user (vorname,nachname,email,str,plz,ort,geb,schule,essen,sonstiges,gotit,uuid,regdate,to_pay,paytype,payed,shirt_payed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%d,%d,%d,%d)",
+				"INSERT INTO ".$this->db->prefix."cw_user (vorname,nachname,email,str,plz,ort,geb,schule,essen,sonstiges,gotit,uuid,regdate,to_pay,paytype,payed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%d,%d,%d)",
 				$this->vorname,
 				$this->nachname,
 				$this->email,
@@ -91,12 +84,11 @@ class Teilnehmer {
 				$this->uuid,
 				$this->to_pay,
 				$this->paytype,
-                $this->payed,
-                $this->shirt_payed
+                $this->payed
 			);
 		}else{
 			$query = $this->db->prepare(
-				"UPDATE ".$this->db->prefix."cw_user SET vorname=%s,nachname=%s,email=%s,str=%s,plz=%s,ort=%s,geb=%s,schule=%s,essen=%s,sonstiges=%s,gotit=%s,to_pay=%s,paytype=%s,payed=%d,shirt_payed=%d WHERE id=%d",
+				"UPDATE ".$this->db->prefix."cw_user SET vorname=%s,nachname=%s,email=%s,str=%s,plz=%s,ort=%s,geb=%s,schule=%s,essen=%s,sonstiges=%s,gotit=%s,to_pay=%s,paytype=%s,payed=%d WHERE id=%d",
 				$this->vorname,
 				$this->nachname,
 				$this->email,
@@ -111,7 +103,6 @@ class Teilnehmer {
 				$this->to_pay,
                 $this->paytype,
 				$this->payed,
-                $this->shirt_payed,
 				$this->id
 			);
 		}
@@ -120,29 +111,6 @@ class Teilnehmer {
 			wp_die();
 		}
 
-		if($this->tshirt){
-			if($this->tshirt->getId() > 0) {
-				$query = $this->db->prepare(
-					"INSERT INTO ".$this->db->prefix."cw_user_shirt (user_id, shirt_id) VALUES (%d,%d) ON DUPLICATE KEY UPDATE shirt_id=%d",
-					$this->id,
-					$this->tshirt->getId(),
-					$this->tshirt->getId()
-				);
-
-				if ( $this->db->query( $query ) === false ) {
-					wp_die();
-				}
-			}
-		}else{
-			$query = $this->db->prepare(
-				"DELETE FROM ".$this->db->prefix."cw_user_shirt WHERE user_id=%d",
-				$this->id
-			);
-			if($this->db->query($query) === false){
-				wp_die();
-			}
-		}
-		
 		if($this->kurs){
 			if($this->kurs->getId() > 0){
 				$query = $this->db->prepare(
@@ -176,8 +144,7 @@ class Teilnehmer {
 	 */
 	public function load($id){
 
-		$query = $this->db->prepare("SELECT * FROM ".$this->db->prefix."cw_user u 
-				  	LEFT JOIN ".$this->db->prefix."cw_user_shirt cws ON u.id = cws.user_id
+		$query = $this->db->prepare("SELECT * FROM ".$this->db->prefix."cw_user u
 				  	LEFT JOIN ".$this->db->prefix."cw_user_kurs cwk ON u.id = cwk.user_id
 				  WHERE u.id=%d",$id);
 
@@ -191,11 +158,6 @@ class Teilnehmer {
 				if($obj[0]->kurs_id > 0){
 					$this->kurs = new Kurs($this->db);
 					$this->kurs->load($obj[0]->kurs_id);
-				}
-
-				if($obj[0]->shirt_id > 0){
-					$this->tshirt = new Shirt($this->db);
-					$this->tshirt->load($obj[0]->shirt_id);
 				}
 
 				return true;
@@ -223,7 +185,6 @@ class Teilnehmer {
 
 	public function delete(){
 	    if($this->id > 0){
-	        $this->db->query("DELETE FROM ".$this->db->prefix."cw_user_shirt WHERE user_id=".$this->id);
             $this->db->query("DELETE FROM ".$this->db->prefix."cw_user_kurs WHERE user_id=".$this->id);
             $this->db->query("DELETE FROM ".$this->db->prefix."cw_user WHERE id=".$this->id);
         }
@@ -291,17 +252,6 @@ class Teilnehmer {
     }
 
 	/**
-	 * @return Shirt
-	 */
-	public function getTshirt(){
-		global $wpdb;
-		if(!is_a($this->tshirt,"Shirt")){
-			return new Shirt($wpdb);
-		}
-		return $this->tshirt;
-	}
-
-	/**
 	 * @return Kurs
 	 */
 	public function getKurs(){
@@ -326,22 +276,6 @@ class Teilnehmer {
     public function setPayed($payed)
     {
         $this->payed = $payed;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getShirtPayed()
-    {
-        return $this->shirt_payed;
-    }
-
-    /**
-     * @param mixed $shirt_payed
-     */
-    public function setShirtPayed($shirt_payed)
-    {
-        $this->shirt_payed = $shirt_payed;
     }
 
 	/**
@@ -429,13 +363,6 @@ class Teilnehmer {
 	}
 
 	/**
-	 * @param Shirt $tshirt
-	 */
-	public function setTshirt( $tshirt ) {
-		$this->tshirt = $tshirt;
-	}
-
-	/**
 	 * @param Kurs $kurs
 	 */
 	public function setKurs( Kurs $kurs ) {
@@ -470,6 +397,6 @@ class Teilnehmer {
 		$this->paytype = $paytype;
 	}
 
-	
+
 
 }

@@ -31,18 +31,13 @@ function show_options(){
 				<a class="ed">{{Vorname}}</a> = Vorname<br />
 				<a class="ed">{{Fullname}}</a> = Vorname Nachname<br />
 				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr (ohne €)<br />
-				<a class="ed">{{BetragShirt}}</a> = T-Shirt Betrag (ohne €)<br />
 				<a class="ed">{{Kurs}}</a> = Gebuchter Kurs<br />
-				<a class="ed">{{Shirt}}</a> = Gewähltes T-Shirt<br />
 				<a class="ed">{{Gesamt}}</a> = Gesamtbetrag (ohne €)<br />
 				<a class="ed">{{lezterTagShopBestellung}}</a> = 4 Wochen vor CW-Start<br />
 				<br />
 				<b>Text oberhalb Anmeldeformular:</b><br />
 				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr Schüler/Stud.<br />
-				<a class="ed">{{BetragAlumni}}</a> = Teilnahmegebühr Alumni<br />
-				<br />
-				<b>Text Beschreibung Shirt:</b><br />
-				<a class="ed">{{lezterTagShopBestellung}}</a> = 4 Wochen vor CW-Start
+				<a class="ed">{{BetragAlumni}}</a> = Teilnahmegebühr Alumni
 			</span>
 		</div>
 		<form method="post" style="float: left">
@@ -57,12 +52,13 @@ function show_options(){
 					</td>
 				</tr>
 				<tr>
-					<th>T-Shirt Bestellung möglich</th>
+					<th>Nur für angemeldete Benutzer</th>
 					<td>
-						<div id="sw_back_2" style="" class="'.($options->getShirtEnabled() ? "sw_on":"sw_off").'">
-							<div id="sw_2" data="sw_ch_2" data-type="switch" style="" ></div>
+						<div id="sw_back_3" style="" class="'.($options->getRegisterLoggedInOnly() ? "sw_on":"sw_off").'">
+							<div id="sw_3" data="sw_ch_3" data-type="switch" style="" ></div>
 						</div>
-						<input type="checkbox" id="sw_ch_2" style="display: none" value="1" name="open_shirt" '.($options->getShirtEnabled() ? "checked=\"checked\"":"").' />
+						<input type="checkbox" id="sw_ch_3" style="display: none" value="1" name="logged_in_only" '.($options->getRegisterLoggedInOnly() ? "checked=\"checked\"":"").'/>
+						<p class="description" style="display:inline;margin-left:8px">Anmeldeformular nur für eingeloggte WordPress-Benutzer anzeigen</p>
 					</td>
 				</tr>
 				<tr>
@@ -111,12 +107,6 @@ function show_options(){
 					</td>
 				</tr>
 				<tr>
-					<th>Text Beschreibung Shirt</th>
-					<td>
-						<textarea class="wp-editor-area" cols="80" rows="3" name="shirt_text">'.$options->getTextShirt().'</textarea>
-					</td>
-				</tr>
-				<tr>
 					<th>Text Anmeldung Email</th>
 					<td>
 						<textarea class="wp-editor-area" cols="80" rows="5" id="mailtext" name="email_text">'.$options->getTextEmail().'</textarea>
@@ -133,8 +123,8 @@ function show_options(){
 				</button>
 			</div>
 		</form>
-		
-		
+
+
 ';
 }
 
@@ -146,13 +136,12 @@ function save_options($post){
 	$options = new Options($wpdb);
 
 	$options->setRegisterEnabled((isset($post["open_reg"])? 1 : 0));
-	$options->setShirtEnabled((isset($post["open_shirt"])? 1 : 0));
+	$options->setRegisterLoggedInOnly((isset($post["logged_in_only"])? 1 : 0));
 	$options->setTeilnahmePreis((isset($post["gebuehr"])? $post["gebuehr"] : 0));
 	$options->set_teilnahme_preis_alumni((isset($post["gebuehr_alumni"])? $post["gebuehr_alumni"] : 0));
 	$options->setCwStart((isset($post["cw_start"])? $post["cw_start"] : ""));
 	$options->setRegisterStart((isset($post["reg_start"])? $post["reg_start"] : ""));
 	$options->setTextClosed((isset($post["close_text"])? $post["close_text"] : ""));
-	$options->setTextShirt((isset($post["shirt_text"])? $post["shirt_text"] : ""));
 	$options->setTextEmail((isset($post["email_text"])? $post["email_text"] : ""));
 	$options->set_text_register((isset($post["register_text"])? $post["register_text"] : ""));
 
