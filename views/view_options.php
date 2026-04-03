@@ -33,7 +33,7 @@ function show_options(){
 				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr (ohne €)<br />
 				<a class="ed">{{Kurs}}</a> = Gebuchter Kurs<br />
 				<a class="ed">{{Gesamt}}</a> = Gesamtbetrag (ohne €)<br />
-				<a class="ed">{{lezterTagShopBestellung}}</a> = 4 Wochen vor CW-Start<br />
+				<a class="ed">{{letzterTagShopBestellung}}</a> = 4 Wochen vor CW-Start<br />
 				<br />
 				<b>Text oberhalb Anmeldeformular:</b><br />
 				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr Schüler/Stud.<br />
