@@ -487,11 +487,9 @@ function register() {
 					Ich habe die <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2016/04/DSEVorlageCampuswoche.pdf">Datenschutzerkl&auml;rung</a> gelesen, verstanden und akzeptiere diese!
 				</div>
 				<br />
-				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900">
-					<input type="checkbox" required="required" name="check2" value="ok"/>&nbsp;
-					Wenn ich das 18. Lebensjahr noch nicht erreicht habe, werde ich unverz&uuml;glich nach dieser Anmeldung die unterschriebene <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2024/03/Einverstaendniserklaerung-einer_eines-Erziehungsberechtigten-1.pdf">Einverst&auml;ndniserkl&auml;rung</a> zusenden bzw. zufaxen.<br />
-					Au&szlig;erdem erkl&auml;re ich, dass ich zum Beginn der Campuswoche das 16. Lebensjahr erreicht haben werde.
-				</div>
+				<div id="check2-container" style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900;display:none">
+					<input type="checkbox" name="check2" value="ok"/>&nbsp;
+					Ich werde unverz&uuml;glich nach dieser Anmeldung die unterschriebene <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2024/03/Einverstaendniserklaerung-einer_eines-Erziehungsberechtigten-1.pdf">Einverst&auml;ndniserkl&auml;rung</a> dem Campuswochen Orga Team zusenden.				</div>
 				<br />
 				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900">
 					<input type="checkbox" required="required" name="check3" value="ok"/>&nbsp;

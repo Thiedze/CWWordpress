@@ -376,7 +376,7 @@ function cw_event_save_handler() {
 }
 
 function reg_front(){
-	wp_enqueue_script( 'front_reg.js', plugins_url( "/js/front_register.js", __FILE__ ) );
+	wp_enqueue_script( 'front_reg.js', plugins_url( "/js/front_register.js", __FILE__ ), array('jquery'), filemtime( plugin_dir_path( __FILE__ ) . 'js/front_register.js' ) );
 	return register();
 }
 

@@ -65,6 +65,13 @@ jQuery(document).ready(function(){
             } else {
                 jQuery('#age-warning').hide();
             }
+            if (age >= 16 && age < 18) {
+                jQuery('#check2-container').show();
+                jQuery('input[name="check2"]').attr('required', 'required');
+            } else {
+                jQuery('#check2-container').hide();
+                jQuery('input[name="check2"]').removeAttr('required').prop('checked', false);
+            }
         }
 
         // Paytype-Check
