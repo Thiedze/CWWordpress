@@ -48,7 +48,7 @@ function register() {
 		return $ret;
 	}
 
-	$start_reached = strtotime( $options->getRegisterStart() ) <= strtotime( 'now' );
+	$start_reached = $options->getRegisterStart() <= current_time( 'Y-m-d' );
 
 	// Startdatum erreicht → Formular für alle anzeigen
 	if ( $start_reached ) {
