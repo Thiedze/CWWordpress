@@ -45,10 +45,10 @@ class Export_XLS {
 			$sheet->setCellValue( 'E2', "(Hoch-)Schule", null )->getStyle( 'E2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'F2', "Sonstiges", null )->getStyle( 'F2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'G2', "Registrierdatum", null )->getStyle( 'G2' )->getFont()->setBold( true );
-			$sheet->setCellValue( 'H2', "Schüler/Student", null )->getStyle( 'H2' )->getFont()->setBold( true );
+			$sheet->setCellValue( 'H2', "Schüler:in/Student:in", null )->getStyle( 'H2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'I2', "Gesamtbetrag", null )->getStyle( 'I2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'J2', "Teilnahme bezahlt?", null )->getStyle( 'J2' )->getFont()->setBold( true );
-			$sheet->setCellValue( 'K2', "Kursleiter", null )->getStyle( 'K2' )->getFont()->setBold( true );
+			$sheet->setCellValue( 'K2', "Kursleiter:in", null )->getStyle( 'K2' )->getFont()->setBold( true );
 
 			$teilnehmer = get_all_teilnehmer_by_kurs( $kurs->getId() );
 
@@ -123,10 +123,10 @@ class Export_XLS {
 			$sheet->setCellValue( 'L1', "Sonstiges", null )->getStyle('L1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'M1', "Aufmerksam durch:", null )->getStyle('M1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'N1', "Registrierdatum", null )->getStyle('N1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'O1', "Schüler/Student", null )->getStyle('O1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'O1', "Schüler:in/Student:in", null )->getStyle('O1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'P1', "Gesamtbetrag", null )->getStyle('P1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'Q1', "Teilnahme bezahlt?", null )->getStyle('Q1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'R1', "Kursleiter", null )->getStyle('R1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'R1', "Kursleiter:in", null )->getStyle('R1')->getFont()->setBold( true );
 
 			$count = 1;
 

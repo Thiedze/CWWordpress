@@ -23,7 +23,7 @@ function teilnehmer(){
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user_kurs');
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user');
 							echo '<div class="notice notice-success inline">
-							        <p><strong>Erledigt:</strong>Alle Teilnehmer wurden erfolgreich entfernt</p>
+							        <p><strong>Erledigt:</strong>Alle Teilnehmer:innen wurden erfolgreich entfernt</p>
 						  		  </div>';
 						}catch(Exception $e){
 							echo '<div class="notice notice-error inline">
@@ -43,12 +43,12 @@ function teilnehmer(){
 				}
 			}else{
 				echo '<div class="notice notice-error inline">
-						  <p><strong>Sicherheitswarnung:</strong> Die Checkbox zum löschen aller Teilnehmer wurde nicht bestätigt.</p>
+						  <p><strong>Sicherheitswarnung:</strong> Die Checkbox zum löschen aller Teilnehmer:innen wurde nicht bestätigt.</p>
 					  </div>';
 			}
 		}else{
 			echo '<div class="notice notice-error inline">
-					  <p><strong>Sicherheitswarnung:</strong> Die Checkbox zum löschen aller Teilnehmer wurde nicht bestätigt.</p>
+					  <p><strong>Sicherheitswarnung:</strong> Die Checkbox zum löschen aller Teilnehmer:innen wurde nicht bestätigt.</p>
 				  </div>';
 		}
 	}
@@ -58,7 +58,7 @@ function teilnehmer(){
 	$_SESSION['csrf'] = sha1(uniqid());
 	
 	if($teilnehmer == null){
-		echo '<h1>Es sind aktuell keine Teilnehmer vorhanden</h1>';
+		echo '<h1>Es sind aktuell keine Teilnehmer:innen vorhanden</h1>';
 	}else{
 		$count_total      = count($teilnehmer);
 		$count_kursleiter = count(array_filter($teilnehmer, function($t){ return $t->getIsCourseLeader(); }));
@@ -66,12 +66,12 @@ function teilnehmer(){
 
 		echo'
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-					<h1 style="margin:0;">Teilnehmer
+					<h1 style="margin:0;">Teilnehmer:innen
 						<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
 					</h1>
-					<form method="post" style="display:inline-flex;align-items:center;gap:6px;" onsubmit="return confirm(\'Wirklich alle Teilnehmer löschen?\');">
+					<form method="post" style="display:inline-flex;align-items:center;gap:6px;" onsubmit="return confirm(\'Wirklich alle Teilnehmer:innen löschen?\');">
 						<input type="checkbox" style="margin:0" value="1" name="delete_all" />
-						<span style="font-size:9pt;">Alle Teilnehmer entfernen</span>
+						<span style="font-size:9pt;">Alle Teilnehmer:innen entfernen</span>
 						<input type="hidden" name="del_csrf" value="'.$_SESSION['csrf'].'"/>
 						<button type="submit" name="delete_all_participants" class="button button-secondary delete" style="background:#900;color:#fff;font-size:13px;height:30px;line-height:28px;padding:0 8px">
 							<span class="dashicons dashicons-trash" style="margin-top:5px"></span>Alle löschen
@@ -80,13 +80,13 @@ function teilnehmer(){
 				</div>
 
 				<div style="display:inline-block;width:180px;padding:8px 16px;margin:0 0 16px 0;background:#fff;border-left:4px solid #72aee6;">
-					<strong>Teilnehmer gesamt:</strong><br />
+					<strong>Teilnehmer:innen gesamt:</strong><br />
 					<span style="font-size:1.4em;font-weight:bold">'.$count_total.'</span>
 					<span style="color:#888"> gesamt</span><br />
 					<span style="font-size:1.4em;font-weight:bold">'.$count_regular.'</span>
 					<span style="color:#888"> regulär</span><br />
 					<span style="font-size:1.4em;font-weight:bold">'.$count_kursleiter.'</span>
-					<span style="color:#888"> Kursleiter</span>
+					<span style="color:#888"> Kursleiter:innen</span>
 				</div>
 
 				<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
@@ -106,7 +106,7 @@ function teilnehmer(){
 							<th>PLZ/Ort</th>
 							<th>Geburtsdatum</th>
 							<th>(Hoch-)Schule</th>
-							<th>Kursleiter</th>
+							<th>Kursleiter:in</th>
 							<th>Kurs</th>
 							<th>Essen</th>
 							<th>Sonstiges</th>
@@ -133,7 +133,7 @@ function teilnehmer(){
 							if($t->get_paytype() == 2){
 								echo '<i title="Alumni" class="dashicons dashicons-welcome-learn-more" style="color: goldenrod"></i>';
 							}else{
-								echo '<i title="Schüler/Student" class="dashicons dashicons-welcome-learn-more"></i>';
+								echo '<i title="Schüler:in/Student:in" class="dashicons dashicons-welcome-learn-more"></i>';
 							}
 
                             if($t->getPayed() == 1){

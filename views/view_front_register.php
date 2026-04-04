@@ -411,17 +411,17 @@ function register() {
 
 			<div>
 				<span>Ich bin:</span><br />
-				<input type="radio" name="paytype" value="1" '.( $_POST["paytype"] == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler/Student (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
+				<input type="radio" name="paytype" value="1" '.( $_POST["paytype"] == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler:in/Student:in (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
 				<input type="radio" name="paytype" value="2" '.( $_POST["paytype"] == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.$options->get_teilnahme_preis_alumni().'€</b>)
 				<div id="paytype-warning" style="display:none;color:#900;font-weight:bold;margin-top:5px">
-					Bitte w&auml;hle aus, ob du Sch&uuml;ler/Student oder Alumni bist.
+					Bitte w&auml;hle aus, ob du Sch&uuml;ler:in/Student:in oder Alumni bist.
 				</div>
 			</div>
 
 			<div>
 				<span>(Hoch-)Schule:</span><br />
 				<input type="text" required="required" name="schule" value="'.$_POST["schule"].'"/>
-				<div style="font-size: 0.8rem !important; font-style: normal">Falls Du kein Schüler/Student bist trage hier z.B. deine Arbeitsst&auml;tte ein</div>
+				<div style="font-size: 0.8rem !important; font-style: normal">Falls Du keine Schüler:in/Student:in bist trage hier z.B. deine Arbeitsst&auml;tte ein</div>
 			</div>
 
 			<div>
@@ -440,9 +440,9 @@ function register() {
 	$ret .= '
 			<div>
 				<span>Ich bin:</span><br />
-				<input type="radio" name="food" value="Kein Vegetarier" '.( $_POST["food"] == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein Vegetarier <br />
-				<input type="radio" name="food" value="Vegetarier" '.( $_POST["food"] == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier <br />
-				<input type="radio" name="food" value="Veganer" '.( $_POST["food"] == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer <br />
+				<input type="radio" name="food" value="Kein Vegetarier" '.( $_POST["food"] == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein:e Vegetarier:in / Veganer:in <br />
+				<input type="radio" name="food" value="Vegetarier" '.( $_POST["food"] == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier:in <br />
+				<input type="radio" name="food" value="Veganer" '.( $_POST["food"] == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer:in <br />
 				<input type="radio" name="food" value="2"'.( $_POST["food"] == "2" ? 'checked="checked"' : '' ).'/> Sonstiges:
 				<input type="text" name="food_sonst" value="'.$_POST["food_sonst"].'"/>
 			</div>

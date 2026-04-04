@@ -70,7 +70,7 @@ function show_kurse(){
 							<a>Kursname</a>
 						</th>
 						<th style="width: 80px;border-right: 1px solid #eaeaea">
-							<a>Teilnehmer</a>
+							<a>Teilnehmer:innen</a>
 						</th>
 						<th style="width: 80px;border-right: 1px solid #eaeaea">
 							<a>Sichtbar</a>
@@ -88,7 +88,7 @@ function show_kurse(){
 			foreach ($kurse as $kurs){
 				echo'
 					<tr>
-						<td>'.$kurs->getName().( $kurs->getNeedsCourseLeader() && empty($kursleiter_map[$kurs->getId()]) ? ' <span style="color:#b00;font-weight:bold" title="Kein Kursleiter zugewiesen">&#9888; Kein Kursleiter</span>' : '' ).'</td>
+						<td>'.$kurs->getName().( $kurs->getNeedsCourseLeader() && empty($kursleiter_map[$kurs->getId()]) ? ' <span style="color:#b00;font-weight:bold" title="Keine Kursleiter:in zugewiesen">&#9888; Keine Kursleiter:in</span>' : '' ).'</td>
 						<td data-order="'.$kurs->getTeilnehmer().'">'.$kurs->getTeilnehmer().' / '.$kurs->getMaxTeilnehmer().'</td>
 						<td>'.($kurs->getShowFront()? '<span style="color: #6a6">Ja</span>': '<span style="color: #a66">Nein</span>').'</td>
 						<td>'.($kurs->getIs_open()? '<span style="color: #6a6">offen</span>': '<span style="color: #a66">geschlossen</span>').'</td>
@@ -124,7 +124,7 @@ function show_kurse(){
 					<td><input type="text" id="new-name" class="regular-text" /></td>
 				</tr>
 				<tr>
-					<th>Max. Teilnehmer:</th>
+					<th>Max. Teilnehmer:innen:</th>
 					<td><input type="number" id="new-mteil" min="0" value="0" style="width:60px" /></td>
 				</tr>
 				<tr>
@@ -136,7 +136,7 @@ function show_kurse(){
 					<td><input type="checkbox" id="new-is-open" value="1" /></td>
 				</tr>
 				<tr>
-					<th>Kursleiter ben&ouml;tigt:</th>
+					<th>Kursleiter:in ben&ouml;tigt:</th>
 					<td><input type="checkbox" id="new-needs-course-leader" value="1" /></td>
 				</tr>
 				<tr>
@@ -166,7 +166,7 @@ function show_kurse(){
 					<td><input type="text" id="edit-name" class="regular-text" /></td>
 				</tr>
 				<tr>
-					<th>Max. Teilnehmer:</th>
+					<th>Max. Teilnehmer:innen:</th>
 					<td><input type="number" id="edit-mteil" min="0" value="0" style="width:60px" /></td>
 				</tr>
 				<tr>
@@ -178,7 +178,7 @@ function show_kurse(){
 					<td><input type="checkbox" id="edit-is-open" value="1" /></td>
 				</tr>
 				<tr>
-					<th>Kursleiter ben&ouml;tigt:</th>
+					<th>Kursleiter:in ben&ouml;tigt:</th>
 					<td><input type="checkbox" id="edit-needs-course-leader" value="1" /></td>
 				</tr>
 				<tr>
@@ -233,7 +233,7 @@ function new_kurs(){
 		if(isset($_POST["mteil"])){
 			if(!preg_match("/[0-9]+/",$_POST["mteil"])){
 				$error = true;
-				$errmsg[] = "<li>Da Anzahl der Teilnehmer ist ung&uuml;ltig</li>";
+				$errmsg[] = "<li>Die Anzahl der Teilnehmer:innen ist ung&uuml;ltig</li>";
 			}
 		}
 
@@ -299,7 +299,7 @@ function new_kurs(){
 							</td>
 						</tr>
 						<tr>
-							<th>Max. Teilnehmer:</th>
+							<th>Max. Teilnehmer:innen:</th>
 							<td>
 								<input id="mteil" min="0" pattern="[0-9]+" required="required" name="mteil" value="'.(isset($_POST["mteil"]) ? $_POST["mteil"]: "0").'" style="width: 30px;height: 20px;"/>
 							</td>
@@ -398,7 +398,7 @@ function edit_kurs(){
 		if(isset($_POST["mteil"])){
 			if(!preg_match("/[0-9]+/",$_POST["mteil"])){
 				$error = true;
-				$errmsg[] = "<li>Da Anzahl der Teilnehmer ist ung&uuml;ltig</li>";
+				$errmsg[] = "<li>Die Anzahl der Teilnehmer:innen ist ung&uuml;ltig</li>";
 			}
 		}
 
@@ -470,7 +470,7 @@ function edit_kurs(){
 							</td>
 						</tr>
 						<tr>
-							<th>Max. Teilnehmer:</th>
+							<th>Max. Teilnehmer:innen:</th>
 							<td>
 								<input id="mteil" min="0" pattern="[0-9]+" required="required" name="mteil" value="'.(isset($_POST["mteil"]) ? $_POST["mteil"]: "0").'" style="width: 30px;height: 20px;"/>
 							</td>
@@ -541,7 +541,7 @@ function delete_kurs(){
 			kurs_head(true);
 			echo '
 				<div class="notice updated">
-					<p>Der angegeben Kurs wurde entfernt und die Teilnehmer in &quot;Sonstiges&quot; verschoben</p>
+					<p>Der angegeben Kurs wurde entfernt und die Teilnehmer:innen in &quot;Sonstiges&quot; verschoben</p>
 				</div>
 			';
 			show_kurse();

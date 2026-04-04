@@ -29,7 +29,7 @@ function tkurs(){
 
     foreach($kurse as $kurs){
         $no_leader_badge = $kurs->getNeedsCourseLeader() && empty($kursleiter_map[$kurs->getId()])
-            ? ' <span style="color:#b00;font-weight:bold" title="Kein Kursleiter zugewiesen">&#9888; Kein Kursleiter</span>'
+            ? ' <span style="color:#b00;font-weight:bold" title="Keine Kursleiter:in zugewiesen">&#9888; Keine Kursleiter:in</span>'
             : '';
         echo '
             <div>
@@ -44,7 +44,7 @@ function tkurs(){
 							<a>Name</a>
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 5%">
-							<a>Kursleiter</a>
+							<a>Kursleiter:in</a>
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 20%">
 							<a>EMail</a>
@@ -108,7 +108,7 @@ function tkurs(){
             }
         }else{
             echo'<tr>
-                    <td>Keine Teilnehmer</td>
+                    <td>Keine Teilnehmer:innen</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>

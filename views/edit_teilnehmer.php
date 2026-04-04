@@ -103,7 +103,7 @@ function edit_teilnehmer( $id ) {
 			
 			<div>
 				<span>Ich bin:</span><br />			
-				<input type="radio" name="paytype" value="1" '.( $teilnehmer->get_paytype() == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler/Student (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
+				<input type="radio" name="paytype" value="1" '.( $teilnehmer->get_paytype() == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler:in/Student:in (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
 				<input type="radio" name="paytype" value="2" '.( $teilnehmer->get_paytype() == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.$options->get_teilnahme_preis_alumni().'€</b>)
 			</div>
 			
@@ -126,10 +126,11 @@ function edit_teilnehmer( $id ) {
 		$ret .= '
 			<div>
 				<span>Ich bin:</span><br />
-				<input type="radio" name="food" value="Kein Vegetarier" '.( $teilnehmer->getEssen() == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein Vegetarier <br />
-				<input type="radio" name="food" value="Vegetarier" '.( $teilnehmer->getEssen() == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier <br />
-				<input type="radio" name="food" value="2" '.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" ? 'checked="checked"' : '' ).'/> Sonstiges:
-				<input type="text" name="food_sonst" id="reg_food_sonst"  value="'.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" ? $teilnehmer->getEssen() : "" ).'"/>
+				<input type="radio" name="food" value="Kein Vegetarier" '.( $teilnehmer->getEssen() == "Kein Vegetarier" ? 'checked="checked"' : '' ).' required="required"/> Kein:e Vegetarier:in / Veganer:in <br />
+				<input type="radio" name="food" value="Vegetarier" '.( $teilnehmer->getEssen() == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier:in <br />
+				<input type="radio" name="food" value="Veganer" '.( $teilnehmer->getEssen() == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer:in <br />
+				<input type="radio" name="food" value="2" '.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" && $teilnehmer->getEssen() != "Veganer" ? 'checked="checked"' : '' ).'/> Sonstiges:
+				<input type="text" name="food_sonst" id="reg_food_sonst"  value="'.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" && $teilnehmer->getEssen() != "Veganer" ? $teilnehmer->getEssen() : "" ).'"/>
 			</div>	
 						
 			<div>
@@ -155,7 +156,7 @@ function edit_teilnehmer( $id ) {
 			</div>
 
 			<div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-			    <span>Kursleiter?</span>
+			    <span>Kursleiter:in?</span>
 				<input type="checkbox" name="is_course_leader" value="1" id="reg_is_course_leader" '.( $teilnehmer->getIsCourseLeader() ? 'checked="checked"' : '' ).'/>
 			</div>
 			

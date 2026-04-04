@@ -156,8 +156,8 @@ function plugin_deactivate(){
 function cwplugin(){
 	add_menu_page('Campuswoche','Campuswoche','cw_allow','cwmain','cw_start',plugin_dir_url(__FILE__).'img/cicon.png');
 	add_submenu_page('cwmain','Kurse','Kurse','cw_allow','kurse','kurse');
-    add_submenu_page('cwmain','Teilnehmer Kurse','Teilnehmer Kurse','cw_allow','tkurs','tkurs');
-	add_submenu_page('cwmain','Teilnehmerliste','Teilnehmerliste','cw_allow','teilnehmer','teilnehmer');
+    add_submenu_page('cwmain','Teilnehmer:innen Kurse','Teilnehmer:innen Kurse','cw_allow','tkurs','tkurs');
+	add_submenu_page('cwmain','Teilnehmer:innen','Teilnehmer:innen','cw_allow','teilnehmer','teilnehmer');
 	add_submenu_page('cwmain','Programm','Programm','cw_allow','program','program');
 }
 

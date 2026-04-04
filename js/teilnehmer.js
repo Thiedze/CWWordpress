@@ -24,7 +24,7 @@ jQuery(document).ready(function(){
         height: Math.min(jQuery(window).height() * 0.9, 800),
         position: { my: "center center", at: "center center", of: window },
         modal: true,
-        title: "Benutzer bearbeiten",
+        title: "Benutzer:in bearbeiten",
         buttons: {
             'Speichern' : function () {
 
@@ -74,7 +74,7 @@ jQuery(document).ready(function(){
 
     jQuery('button[name="teil_delete"]').click(function(){
 
-        var ret = confirm("Den Benutzer \""+jQuery(this).attr("data-name")+"\" wirklich löschen?");
+        var ret = confirm("Die Benutzer:in \""+jQuery(this).attr("data-name")+"\" wirklich löschen?");
 
         if(ret == true){
             jQuery.post(

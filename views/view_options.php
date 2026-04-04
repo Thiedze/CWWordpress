@@ -36,7 +36,7 @@ function show_options(){
 				<a class="ed">{{letzterTagShopBestellung}}</a> = 4 Wochen vor CW-Start<br />
 				<br />
 				<b>Text oberhalb Anmeldeformular:</b><br />
-				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr Schüler/Stud.<br />
+				<a class="ed">{{Betrag}}</a> = Teilnahmegebühr Schüler:in/Stud.<br />
 				<a class="ed">{{BetragAlumni}}</a> = Teilnahmegebühr Alumni
 			</span>
 		</div>
@@ -52,17 +52,17 @@ function show_options(){
 					</td>
 				</tr>
 				<tr>
-					<th>Nur für angemeldete Benutzer</th>
+					<th>Nur für angemeldete Benutzer:innen</th>
 					<td>
 						<div id="sw_back_3" style="" class="'.($options->getRegisterLoggedInOnly() ? "sw_on":"sw_off").'">
 							<div id="sw_3" data="sw_ch_3" data-type="switch" style="" ></div>
 						</div>
 						<input type="checkbox" id="sw_ch_3" style="display: none" value="1" name="logged_in_only" '.($options->getRegisterLoggedInOnly() ? "checked=\"checked\"":"").'/>
-						<p class="description" style="display:inline;margin-left:8px">Anmeldeformular nur für eingeloggte WordPress-Benutzer anzeigen</p>
+						<p class="description" style="display:inline;margin-left:8px">Anmeldeformular nur für eingeloggte WordPress-Benutzer:innen anzeigen</p>
 					</td>
 				</tr>
 				<tr>
-					<th>Teilnahmegebühr Schüler/Studenten</th>
+					<th>Teilnahmegebühr Schüler:innen/Student:innen</th>
 					<td>
 						<input data="number" value="'.$options->getTeilnahmePreis().'" style="width: 30px;height: 20px;" required="required" name="gebuehr"/>&euro;
 					</td>
