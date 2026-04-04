@@ -36,6 +36,16 @@ function show_kurse(){
 		';
 	}else{
 
+		$kursleiter_map = [];
+		$kl_rows = $wpdb->get_results(
+			"SELECT ku.kurs_id FROM {$wpdb->prefix}cw_user_kurs ku
+			 JOIN {$wpdb->prefix}cw_user u ON ku.user_id = u.id
+			 WHERE u.is_course_leader = 1"
+		);
+		foreach ($kl_rows as $row) {
+			$kursleiter_map[$row->kurs_id] = true;
+		}
+
 		$sum_teil = 0;
 		$sum_max  = 0;
 		foreach ($kurse as $k) {
@@ -46,8 +56,14 @@ function show_kurse(){
 		}
 
 		echo '
-			<div style="display:flex;gap:16px;align-items:flex-start;">
-			<table id="kurstable" style="flex:1;" class="widefat striped sortable display">
+			<div style="display:inline-block;width:180px;padding:8px 16px;margin:0 0 16px 0;background:#fff;border-left:4px solid #72aee6;">
+				<strong>Belegung (offen &amp; sichtbar):</strong><br />
+				<span style="font-size:1.4em;font-weight:bold">'.$sum_teil.' / '.$sum_max.'</span>
+				<span style="color:#888"> Belegt</span>
+			</div>
+
+			<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+			<table id="kurstable" class="widefat striped sortable display">
 				<thead>
 					<tr>
 						<th style="width: 400px;border-right: 1px solid #eaeaea">
@@ -62,7 +78,7 @@ function show_kurse(){
 						<th style="width: 80px;border-right: 1px solid #eaeaea">
 							<a>Status</a>
 						</th>
-						<th data-orderable="false">
+						<th data-orderable="false" style="width:60px">
 							&nbsp;
 						</th>
 					</tr>
@@ -72,7 +88,7 @@ function show_kurse(){
 			foreach ($kurse as $kurs){
 				echo'
 					<tr>
-						<td>'.$kurs->getName().'</td>
+						<td>'.$kurs->getName().( $kurs->getNeedsCourseLeader() && empty($kursleiter_map[$kurs->getId()]) ? ' <span style="color:#b00;font-weight:bold" title="Kein Kursleiter zugewiesen">&#9888; Kein Kursleiter</span>' : '' ).'</td>
 						<td data-order="'.$kurs->getTeilnehmer().'">'.$kurs->getTeilnehmer().' / '.$kurs->getMaxTeilnehmer().'</td>
 						<td>'.($kurs->getShowFront()? '<span style="color: #6a6">Ja</span>': '<span style="color: #a66">Nein</span>').'</td>
 						<td>'.($kurs->getIs_open()? '<span style="color: #6a6">offen</span>': '<span style="color: #a66">geschlossen</span>').'</td>
@@ -93,11 +109,6 @@ function show_kurse(){
 
 		echo'</tbody>
 			</table>
-			<div class="notice notice-info" style="width:180px;flex-shrink:0;padding:8px 16px;margin:0;">
-				<strong>Belegung (offen &amp; sichtbar):</strong><br />
-				<span style="font-size:1.4em;font-weight:bold">'.$sum_teil.' / '.$sum_max.'</span>
-				<span style="color:#888"> Belegt</span>
-			</div>
 			</div>
 		';
 
@@ -123,6 +134,10 @@ function show_kurse(){
 				<tr>
 					<th>Anmeldung m&ouml;glich:</th>
 					<td><input type="checkbox" id="new-is-open" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Kursleiter ben&ouml;tigt:</th>
+					<td><input type="checkbox" id="new-needs-course-leader" value="1" /></td>
 				</tr>
 				<tr>
 					<th>Bild:</th>
@@ -161,6 +176,10 @@ function show_kurse(){
 				<tr>
 					<th>Anmeldung m&ouml;glich:</th>
 					<td><input type="checkbox" id="edit-is-open" value="1" /></td>
+				</tr>
+				<tr>
+					<th>Kursleiter ben&ouml;tigt:</th>
+					<td><input type="checkbox" id="edit-needs-course-leader" value="1" /></td>
 				</tr>
 				<tr>
 					<th>Bild:</th>

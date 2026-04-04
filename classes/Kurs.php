@@ -26,6 +26,8 @@ class Kurs {
 
     private $beauty_name;
 
+	private $needs_course_leader;
+
 	/**
 	 * @var wpdb
 	 */
@@ -37,7 +39,14 @@ class Kurs {
 	}
 
 	public function load($id){
-		$query = $this->db->prepare("SELECT k.*,count(ku.user_id) AS teilnehmer FROM ".$this->db->prefix."cw_kurse k LEFT JOIN ".$this->db->prefix."cw_user_kurs ku ON k.id = ku.kurs_id WHERE k.id=%d",$id);
+		$query = $this->db->prepare(
+			"SELECT k.*, COUNT(CASE WHEN ku.user_id IS NOT NULL AND COALESCE(u.is_course_leader,0)=0 THEN 1 END) AS teilnehmer
+			 FROM ".$this->db->prefix."cw_kurse k
+			 LEFT JOIN ".$this->db->prefix."cw_user_kurs ku ON k.id = ku.kurs_id
+			 LEFT JOIN ".$this->db->prefix."cw_user u ON ku.user_id = u.id
+			 WHERE k.id=%d",
+			$id
+		);
 
 		try {
 			if ( $obj = $this->db->get_results( $query ) ) {
@@ -58,18 +67,7 @@ class Kurs {
 	public function save(){
 		if($this->id < 0){
 			$query = $this->db->prepare(
-				"INSERT INTO ".$this->db->prefix."cw_kurse (name, beschreibung, max_teilnehmer, bild, show_front, is_open, beauty_name) VALUES (%s,%s,%d,%s,%d,%d,%s)",
-				$this->name,
-				$this->beschreibung,
-				$this->max_teilnehmer,
-				$this->bild,
-				$this->show_front,
-				$this->is_open,
-                $this->beauty_name
-			);
-		}else{
-			$query = $this->db->prepare(
-				"UPDATE ".$this->db->prefix."cw_kurse SET name=%s,beschreibung=%s,max_teilnehmer=%d,bild=%s,show_front=%d,is_open=%d,beauty_name=%s WHERE id=%d",
+				"INSERT INTO ".$this->db->prefix."cw_kurse (name, beschreibung, max_teilnehmer, bild, show_front, is_open, beauty_name, needs_course_leader) VALUES (%s,%s,%d,%s,%d,%d,%s,%d)",
 				$this->name,
 				$this->beschreibung,
 				$this->max_teilnehmer,
@@ -77,6 +75,19 @@ class Kurs {
 				$this->show_front,
 				$this->is_open,
                 $this->beauty_name,
+				$this->needs_course_leader
+			);
+		}else{
+			$query = $this->db->prepare(
+				"UPDATE ".$this->db->prefix."cw_kurse SET name=%s,beschreibung=%s,max_teilnehmer=%d,bild=%s,show_front=%d,is_open=%d,beauty_name=%s,needs_course_leader=%d WHERE id=%d",
+				$this->name,
+				$this->beschreibung,
+				$this->max_teilnehmer,
+				$this->bild,
+				$this->show_front,
+				$this->is_open,
+                $this->beauty_name,
+				$this->needs_course_leader,
 				$this->id
 			);
 		}
@@ -169,6 +180,14 @@ class Kurs {
 	 */
 	public function setIs_open( $is_open ) {
 		$this->is_open = $is_open;
+	}
+
+	public function getNeedsCourseLeader() {
+		return $this->needs_course_leader;
+	}
+
+	public function setNeedsCourseLeader( $needs_course_leader ): void {
+		$this->needs_course_leader = $needs_course_leader;
 	}
 
     /**

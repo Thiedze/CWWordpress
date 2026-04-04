@@ -60,21 +60,35 @@ function teilnehmer(){
 	if($teilnehmer == null){
 		echo '<h1>Es sind aktuell keine Teilnehmer vorhanden</h1>';
 	}else{
+		$count_total      = count($teilnehmer);
+		$count_kursleiter = count(array_filter($teilnehmer, function($t){ return $t->getIsCourseLeader(); }));
+		$count_regular    = $count_total - $count_kursleiter;
+
 		echo'
-				<h1>Teilnehmer (aktuell '.count($teilnehmer).')
-					<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
-					<form method="post" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;vertical-align:middle" onsubmit="return confirm(\'Wirklich alle Teilnehmer löschen?\');">
+				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+					<h1 style="margin:0;">Teilnehmer
+						<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
+					</h1>
+					<form method="post" style="display:inline-flex;align-items:center;gap:6px;" onsubmit="return confirm(\'Wirklich alle Teilnehmer löschen?\');">
 						<input type="checkbox" style="margin:0" value="1" name="delete_all" />
-						<span style="font-size:9pt;font-weight:normal">Alle Teilnehmer entfernen</span>
+						<span style="font-size:9pt;">Alle Teilnehmer entfernen</span>
 						<input type="hidden" name="del_csrf" value="'.$_SESSION['csrf'].'"/>
 						<button type="submit" name="delete_all_participants" class="button button-secondary delete" style="background:#900;color:#fff;font-size:13px;height:30px;line-height:28px;padding:0 8px">
 							<span class="dashicons dashicons-trash" style="margin-top:5px"></span>Alle löschen
 						</button>
 					</form>
-				</h1>
+				</div>
 
-				<br />
-				
+				<div style="display:inline-block;width:180px;padding:8px 16px;margin:0 0 16px 0;background:#fff;border-left:4px solid #72aee6;">
+					<strong>Teilnehmer gesamt:</strong><br />
+					<span style="font-size:1.4em;font-weight:bold">'.$count_total.'</span>
+					<span style="color:#888"> gesamt</span><br />
+					<span style="font-size:1.4em;font-weight:bold">'.$count_regular.'</span>
+					<span style="color:#888"> regulär</span><br />
+					<span style="font-size:1.4em;font-weight:bold">'.$count_kursleiter.'</span>
+					<span style="color:#888"> Kursleiter</span>
+				</div>
+
 				<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
 				<table id="sorttable" class="widefat striped">
 					<thead>
@@ -92,6 +106,7 @@ function teilnehmer(){
 							<th>PLZ/Ort</th>
 							<th>Geburtsdatum</th>
 							<th>(Hoch-)Schule</th>
+							<th>Kursleiter</th>
 							<th>Kurs</th>
 							<th>Essen</th>
 							<th>Sonstiges</th>
@@ -135,6 +150,7 @@ function teilnehmer(){
 							<td>'.$t->getPlz().' '.$t->getOrt().'</td>
 							<td data-order="'.strtotime($t->getGeb()).'">'.date("d.m.Y",strtotime($t->getGeb())).'</td>
 							<td>'.$t->getSchule().'</td>
+							<td>'.($t->getIsCourseLeader() ? '<span style="color:#6a6">Ja</span>' : 'Nein').'</td>
 							<td>'.($t->getKurs() !== null ? $t->getKurs()->getName() : "Kein Kurs").'</td>
 							<td>'.$t->getEssen().'</td>
 							<td '.(strlen(trim($t->getSonstiges())) > 16 ? 'datatype="tooltip" title="'.htmlentities($t->getSonstiges()).'"' : '').'>'.(strlen(trim($t->getSonstiges())) > 16 ? htmlentities(substr($t->getSonstiges(),0,15)).'...' : htmlentities($t->getSonstiges())).'</td>

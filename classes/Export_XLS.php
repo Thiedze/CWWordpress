@@ -19,7 +19,7 @@ class Export_XLS {
 	}
 
 	public function export_kurs_teilnehmer() {
-		$kurse = get_all_kurse();
+		$kurse = get_all_kurse(true);
 		$first = true;
 
 		$phpx   = new PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -36,7 +36,7 @@ class Export_XLS {
 			$sheetTitle = substr( preg_replace( '/[\\\\\/\*\?\:\[\]]/', '', $kurs->getName() ), 0, 31 );
 			$sheet->setTitle( $sheetTitle ?: 'Kurs' );
 
-			$sheet->mergeCells( 'A1:J1' )->setCellValue( 'A1', $kurs->getName() )->getStyle( 'A1' )->getFont()->setBold( true )->setSize( 13 );
+			$sheet->mergeCells( 'A1:K1' )->setCellValue( 'A1', $kurs->getName() )->getStyle( 'A1' )->getFont()->setBold( true )->setSize( 13 );
 
 			$sheet->setCellValue( 'A2', "Nachname", null )->getStyle( 'A2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'B2', "Vorname", null )->getStyle( 'B2' )->getFont()->setBold( true );
@@ -48,6 +48,7 @@ class Export_XLS {
 			$sheet->setCellValue( 'H2', "Schüler/Student", null )->getStyle( 'H2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'I2', "Gesamtbetrag", null )->getStyle( 'I2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'J2', "Teilnahme bezahlt?", null )->getStyle( 'J2' )->getFont()->setBold( true );
+			$sheet->setCellValue( 'K2', "Kursleiter", null )->getStyle( 'K2' )->getFont()->setBold( true );
 
 			$teilnehmer = get_all_teilnehmer_by_kurs( $kurs->getId() );
 
@@ -57,7 +58,7 @@ class Export_XLS {
 					$count ++;
 
 					if ( $count % 2 == 1 ) {
-						$sheet->getStyle( 'A'.$count.':J'.$count )->getFill()->setFillType( \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID )->getStartColor()->setARGB( 'FFE0E0E0' );
+						$sheet->getStyle( 'A'.$count.':K'.$count )->getFill()->setFillType( \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID )->getStartColor()->setARGB( 'FFE0E0E0' );
 					}
 
 					$sheet->setCellValue( 'A'.$count, $teil->getNachname() );
@@ -73,14 +74,16 @@ class Export_XLS {
 					$sheet->setCellValue( 'H'.$count, ( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ) );
 					$sheet->setCellValue( 'I'.$count, $teil->get_to_pay() );
 					$sheet->setCellValue( 'J'.$count, ( $teil->getPayed() == 1 ? "Ja" : "Nein" ) );
+					$sheet->setCellValue( 'K'.$count, ( $teil->getIsCourseLeader() ? "Ja" : "Nein" ) );
 
 					$sheet->getStyle('H'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 					$sheet->getStyle('I'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 					$sheet->getStyle('J'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+					$sheet->getStyle('K'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 				}
 			}
 
-			$sheet->setAutoFilter('A2:J2');
+			$sheet->setAutoFilter('A2:K2');
 
 			$sheet->getPageSetup()->setFitToWidth( 0 )->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
 
@@ -123,6 +126,7 @@ class Export_XLS {
 			$sheet->setCellValue( 'O1', "Schüler/Student", null )->getStyle('O1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'P1', "Gesamtbetrag", null )->getStyle('P1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'Q1', "Teilnahme bezahlt?", null )->getStyle('Q1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'R1', "Kursleiter", null )->getStyle('R1')->getFont()->setBold( true );
 
 			$count = 1;
 
@@ -130,7 +134,7 @@ class Export_XLS {
 				$count ++;
 
 				if ( $count % 2 == 1 ) {
-					$sheet->getStyle( 'A'.$count.':P'.$count )->getFill()->setFillType( \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID )->getStartColor()->setARGB( 'FFE0E0E0' );
+					$sheet->getStyle( 'A'.$count.':R'.$count )->getFill()->setFillType( \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID )->getStartColor()->setARGB( 'FFE0E0E0' );
 				}
 
 				$sheet->setCellValue( 'A'.$count, $teil->getNachname() );
@@ -161,12 +165,14 @@ class Export_XLS {
 				$sheet->setCellValue( 'O'.$count, ( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ) );
 				$sheet->setCellValue( 'P'.$count, $teil->get_to_pay() );
 				$sheet->setCellValue( 'Q'.$count, ( $teil->getPayed() == 1 ? "Ja" : "Nein" ) );
+				$sheet->setCellValue( 'R'.$count, ( $teil->getIsCourseLeader() ? "Ja" : "Nein" ) );
 
 				$sheet->getStyle('O'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 				$sheet->getStyle('P'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 				$sheet->getStyle('Q'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+				$sheet->getStyle('R'.$count)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
-				$sheet->setAutoFilter('A1:Q1');
+				$sheet->setAutoFilter('A1:R1');
 
 				$sheet->getPageSetup()->setFitToWidth(0)->setOrientation( \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE );
 

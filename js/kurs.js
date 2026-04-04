@@ -34,6 +34,7 @@ jQuery(document).ready(function ($) {
         $('#new-bild').val('');
         $('#new-preimg').attr('src', '').hide();
         $('#new-beschreibung').html('');
+        $('#new-needs-course-leader').prop('checked', false);
         $dialogNew.dialog('open');
     });
 
@@ -66,6 +67,7 @@ jQuery(document).ready(function ($) {
             $('#edit-bild').val(k.bild);
             $('#edit-preimg').attr('src', k.bild || '').toggle(!!k.bild);
             $('#edit-beschreibung').html(k.beschreibung);
+            $('#edit-needs-course-leader').prop('checked', k.needs_course_leader == 1);
             $dialogEdit.dialog('open');
         });
     });
@@ -90,7 +92,8 @@ jQuery(document).ready(function ($) {
             show_front:  $('#' + p + '-show-front').is(':checked') ? 1 : '',
             is_open:     $('#' + p + '-is-open').is(':checked')    ? 1 : '',
             bild:        $('#' + p + '-bild').val(),
-            beschreibung: $('#' + p + '-beschreibung').html()
+            beschreibung:        $('#' + p + '-beschreibung').html(),
+            needs_course_leader: $('#' + p + '-needs-course-leader').is(':checked') ? 1 : ''
         }, function (response) {
             if (response.success) {
                 location.reload();

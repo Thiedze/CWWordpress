@@ -189,13 +189,14 @@ function cw_kurs_load_handler() {
 	$kurs->load(intval($_POST['kid'] ?? 0));
 	if ($kurs->getId() < 0) wp_send_json_error('Kurs nicht gefunden.');
 	wp_send_json_success(array(
-		'id'             => $kurs->getId(),
-		'name'           => $kurs->getName(),
-		'max_teilnehmer' => $kurs->getMaxTeilnehmer(),
-		'show_front'     => $kurs->getShowFront(),
-		'is_open'        => $kurs->getIs_open(),
-		'bild'           => $kurs->getBild(),
-		'beschreibung'   => $kurs->getBeschreibung(),
+		'id'                  => $kurs->getId(),
+		'name'                => $kurs->getName(),
+		'max_teilnehmer'      => $kurs->getMaxTeilnehmer(),
+		'show_front'          => $kurs->getShowFront(),
+		'is_open'             => $kurs->getIs_open(),
+		'bild'                => $kurs->getBild(),
+		'beschreibung'        => $kurs->getBeschreibung(),
+		'needs_course_leader' => $kurs->getNeedsCourseLeader(),
 	));
 }
 
@@ -208,8 +209,9 @@ function cw_kurs_save_handler() {
 	$mteil        = intval($_POST['mteil'] ?? 0);
 	$show_front   = empty($_POST['show_front']) ? 0 : 1;
 	$is_open      = empty($_POST['is_open'])    ? 0 : 1;
-	$bild         = esc_url_raw($_POST['bild'] ?? '');
-	$beschreibung = wp_kses_post($_POST['beschreibung'] ?? '');
+	$bild                = esc_url_raw($_POST['bild'] ?? '');
+	$beschreibung        = wp_kses_post($_POST['beschreibung'] ?? '');
+	$needs_course_leader = empty($_POST['needs_course_leader']) ? 0 : 1;
 	if (empty($name)) wp_send_json_error('Bitte einen Kursnamen angeben.');
 	$kurs = new Kurs($wpdb);
 	if ($kid > 0) $kurs->load($kid);
@@ -219,6 +221,7 @@ function cw_kurs_save_handler() {
 	$kurs->setIs_open($is_open);
 	$kurs->setBild($bild);
 	$kurs->setBeschreibung($beschreibung);
+	$kurs->setNeedsCourseLeader($needs_course_leader);
 	if ($kurs->save()) wp_send_json_success();
 	else wp_send_json_error('Fehler beim Speichern.');
 }

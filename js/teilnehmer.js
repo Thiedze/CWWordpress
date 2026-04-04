@@ -14,14 +14,15 @@ jQuery(document).ready(function(){
         destroy: true,
         lengthChange: false,
         paging: false,
-        info: false
+        info: false,
+        searching: false
     });
 
     $module = jQuery('<div id="modal" style="width:100%;font-size:10pt;overflow:auto">ROFL</div>').dialog({
         autoOpen: false,
         width: Math.min(jQuery(window).width() * 0.95, 800),
-        height: Math.min(jQuery(window).height() * 0.9, 1000),
-        position: { my: "center top", at: "center top+10", of: window },
+        height: Math.min(jQuery(window).height() * 0.9, 800),
+        position: { my: "center center", at: "center center", of: window },
         modal: true,
         title: "Benutzer bearbeiten",
         buttons: {

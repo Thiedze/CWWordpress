@@ -17,10 +17,23 @@ function tkurs(){
 		    </h1>
     ';
 
+    $kursleiter_map = [];
+    $kl_rows = $wpdb->get_results(
+        "SELECT ku.kurs_id FROM {$wpdb->prefix}cw_user_kurs ku
+         JOIN {$wpdb->prefix}cw_user u ON ku.user_id = u.id
+         WHERE u.is_course_leader = 1"
+    );
+    foreach ($kl_rows as $row) {
+        $kursleiter_map[$row->kurs_id] = true;
+    }
+
     foreach($kurse as $kurs){
+        $no_leader_badge = $kurs->getNeedsCourseLeader() && empty($kursleiter_map[$kurs->getId()])
+            ? ' <span style="color:#b00;font-weight:bold" title="Kein Kursleiter zugewiesen">&#9888; Kein Kursleiter</span>'
+            : '';
         echo '
             <div>
-            <h3>'.$kurs->getName().'&nbsp;&nbsp;( '.$kurs->getTeilnehmer().'/'.$kurs->getMaxTeilnehmer().' )</h3>
+            <h3>'.$kurs->getName().$no_leader_badge.'&nbsp;&nbsp;( '.$kurs->getTeilnehmer().'/'.$kurs->getMaxTeilnehmer().' )</h3>
             <table id="sorttable_'.$kurs->getId().'" class="widefat striped sortable display">
 				<thead>
 					<tr>
@@ -29,6 +42,9 @@ function tkurs(){
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 20%">
 							<a>Name</a>
+						</th>
+						<th style="border-right: 1px solid #eaeaea;width: 5%">
+							<a>Kursleiter</a>
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 20%">
 							<a>EMail</a>
@@ -69,6 +85,9 @@ function tkurs(){
                                 ' . $teil->getVorname() . '&nbsp;' . $teil->getNachname() . '
                             </td>
                             <td style="border-right: 1px solid #eaeaea">
+                                ' . ($teil->getIsCourseLeader() ? '<span style="color:#6a6">Ja</span>' : 'Nein') . '
+                            </td>
+                            <td style="border-right: 1px solid #eaeaea">
                                 ' . $teil->getEmail() . '
                             </td>
                             <td data-order="'.$alter.'" style="border-right: 1px solid #eaeaea">
@@ -90,6 +109,7 @@ function tkurs(){
         }else{
             echo'<tr>
                     <td>Keine Teilnehmer</td>
+                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>

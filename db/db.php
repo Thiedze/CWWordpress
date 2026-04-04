@@ -36,6 +36,7 @@ function init_database($db){
 		to_pay int(4),
 		paytype int(1),
 		payed int(1),
+		is_course_leader int(1),
 		PRIMARY KEY  (id)
 	) ".$db->get_charset_collate();
 
@@ -48,6 +49,7 @@ function init_database($db){
 		bild VARCHAR(255),
 		show_front int(1),
 		is_open int(1),
+		needs_course_leader int(1),
 		PRIMARY KEY  (id)
 	) ".$db->get_charset_collate();
 

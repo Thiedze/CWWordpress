@@ -38,6 +38,8 @@ class Teilnehmer {
 
     private $payed;
 
+	private $is_course_leader;
+
 	private $to_pay;
 
 	private $paytype;
@@ -69,7 +71,7 @@ class Teilnehmer {
 	public function save(){
 		if($this->id < 0){
 			$query = $this->db->prepare(
-				"INSERT INTO ".$this->db->prefix."cw_user (vorname,nachname,email,str,plz,ort,geb,schule,essen,sonstiges,gotit,uuid,regdate,to_pay,paytype,payed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%d,%d,%d)",
+				"INSERT INTO ".$this->db->prefix."cw_user (vorname,nachname,email,str,plz,ort,geb,schule,essen,sonstiges,gotit,uuid,regdate,to_pay,paytype,payed,is_course_leader) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%d,%d,%d,%d)",
 				$this->vorname,
 				$this->nachname,
 				$this->email,
@@ -84,11 +86,12 @@ class Teilnehmer {
 				$this->uuid,
 				$this->to_pay,
 				$this->paytype,
-                $this->payed
+                $this->payed,
+				$this->is_course_leader
 			);
 		}else{
 			$query = $this->db->prepare(
-				"UPDATE ".$this->db->prefix."cw_user SET vorname=%s,nachname=%s,email=%s,str=%s,plz=%s,ort=%s,geb=%s,schule=%s,essen=%s,sonstiges=%s,gotit=%s,to_pay=%s,paytype=%s,payed=%d WHERE id=%d",
+				"UPDATE ".$this->db->prefix."cw_user SET vorname=%s,nachname=%s,email=%s,str=%s,plz=%s,ort=%s,geb=%s,schule=%s,essen=%s,sonstiges=%s,gotit=%s,to_pay=%s,paytype=%s,payed=%d,is_course_leader=%d WHERE id=%d",
 				$this->vorname,
 				$this->nachname,
 				$this->email,
@@ -103,6 +106,7 @@ class Teilnehmer {
 				$this->to_pay,
                 $this->paytype,
 				$this->payed,
+				$this->is_course_leader,
 				$this->id
 			);
 		}
@@ -395,6 +399,14 @@ class Teilnehmer {
 	 */
 	public function set_paytype( $paytype ): void {
 		$this->paytype = $paytype;
+	}
+
+	public function getIsCourseLeader() {
+		return $this->is_course_leader;
+	}
+
+	public function setIsCourseLeader( $is_course_leader ): void {
+		$this->is_course_leader = $is_course_leader;
 	}
 
 

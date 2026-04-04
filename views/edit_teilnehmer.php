@@ -149,9 +149,14 @@ function edit_teilnehmer( $id ) {
 				<textarea style="width: 100%" name="sonstiges" id="reg_sonstiges" >'.$teilnehmer->getSonstiges().'</textarea>
 			</div>
 			
-			<div>
-				<input type="checkbox" name="payed" value="1" id="reg_payed" '.( $teilnehmer->getPayed() ? 'checked="checked"' : '' ).' style="float: right; margin-right: 200px;margin-top: 3px;"/>
-			    <span style="margin-right: 15px;float: left">Teilnahme bezahlt?</span>
+			<div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+			    <span>Teilnahme bezahlt?</span>
+				<input type="checkbox" name="payed" value="1" id="reg_payed" '.( $teilnehmer->getPayed() ? 'checked="checked"' : '' ).'/>
+			</div>
+
+			<div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+			    <span>Kursleiter?</span>
+				<input type="checkbox" name="is_course_leader" value="1" id="reg_is_course_leader" '.( $teilnehmer->getIsCourseLeader() ? 'checked="checked"' : '' ).'/>
 			</div>
 			
 			<input type="hidden" name="id" id="reg_id" value="'.$teilnehmer->getId().'" />
@@ -192,6 +197,7 @@ function save_edit() {
 		$teilnehmer->setGotit( ( $_POST["gotit"] ) != "6" ? $_POST["gotit"] : $_POST["gotit_sonst"] );
 		$teilnehmer->setSonstiges( $_POST["sonstiges"] );
 		$teilnehmer->setPayed( ( isset( $_POST["payed"] ) ? $_POST["payed"] : 0 ) );
+		$teilnehmer->setIsCourseLeader( isset( $_POST["is_course_leader"] ) ? 1 : 0 );
 		$teilnehmer->set_paytype( $_POST["paytype"] );
 
 		$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
