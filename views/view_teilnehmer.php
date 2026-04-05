@@ -157,7 +157,7 @@ function teilnehmer(){
 							<td>'.esc_html(array('Kein Vegetarier'=>'Kein:e Vegetarier:in','Vegetarier'=>'Vegetarier:in','Veganer'=>'Veganer:in')[$t->getEssen()] ?? $t->getEssen()).'</td>
 							<td '.(strlen(trim($t->getSonstiges())) > 16 ? 'datatype="tooltip" title="'.esc_attr($t->getSonstiges()).'"' : '').'>'.esc_html(strlen(trim($t->getSonstiges())) > 16 ? substr($t->getSonstiges(),0,15).'...' : $t->getSonstiges()).'</td>
 							<td>'.esc_html($t->get_to_pay()).'&euro;</td>
-							<td data-order="'.esc_attr(strtotime($t->getRegdate())).'">'.esc_html(date("d.m.Y H:i:s",strtotime($t->getRegdate()))).'</td>
+							<td data-order="'.esc_attr(strtotime($t->getRegdate())).'">'.esc_html(wp_date("d.m.Y H:i:s",strtotime($t->getRegdate()))).'</td>
 							
 						</tr>
 					';
