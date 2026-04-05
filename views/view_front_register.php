@@ -450,9 +450,9 @@ function register() {
 			<div>
 				<span>Ich kenne die Campuswoche:</span><br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Flyer/Plakate" ? 'checked="checked"' : '' ).' value="Flyer/Plakate" required="required"/>&nbsp;...von Flyern / Plakaten<br />
-				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Freunde" ? 'checked="checked"' : '' ).'value="Freunde"/>&nbsp;...von Freunden<br />
+				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Freunde" ? 'checked="checked"' : '' ).'value="Freunde"/>&nbsp;...von Freund:innen<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Zeitung" ? 'checked="checked"' : '' ).'value="Zeitung"/>&nbsp;...von der Zeitung<br />
-				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Lehrer/Dozenten" ? 'checked="checked"' : '' ).'value="Lehrer/Dozenten"/>&nbsp;...von Lehrern / Dozenten<br />
+				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Lehrer/Dozenten" ? 'checked="checked"' : '' ).'value="Lehrer/Dozenten"/>&nbsp;...von Lehrer:innen / Dozent:innen<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Messen" ? 'checked="checked"' : '' ).'value="Messen"/>&nbsp;...von Messen<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "RT-Labor" ? 'checked="checked"' : '' ).'value="RT-Labor"/>&nbsp;...vom RT-Labor<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "6" ? 'checked="checked"' : '' ).'value="6"/>&nbsp;...von anderer Quelle<br />
