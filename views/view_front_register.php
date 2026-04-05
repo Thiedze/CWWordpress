@@ -348,27 +348,27 @@ function register() {
 
 			<div>
 				<span>Vorname:</span><br />
-				<input type="text" name="vorname" value="'.$_POST["vorname"].'" required="required"/>
+				<input type="text" name="vorname" value="'.esc_attr($_POST["vorname"]).'" required="required"/>
 			</div>
 
 			<div>
 				<span>Nachname:</span><br />
-				<input type="text" name="nachname" value="'.$_POST["nachname"].'" required="required"/>
+				<input type="text" name="nachname" value="'.esc_attr($_POST["nachname"]).'" required="required"/>
 			</div>
 
 			<div>
 				<span>EMail:</span><br />
-				<input type="email" name="email" value="'.$_POST["email"].'" required="required"/>
+				<input type="email" name="email" value="'.esc_attr($_POST["email"]).'" required="required"/>
 			</div>
 
 			<div>
 				<span>EMail wiederholen:</span><br />
-				<input type="email" name="emailw" value="'.$_POST["emailw"].'" required="required"/>
+				<input type="email" name="emailw" value="'.esc_attr($_POST["emailw"]).'" required="required"/>
 			</div>
 
 			<div>
 				<span>Stra&szlig;e &amp; Hausnummer:</span><br />
-				<input type="text" name="strasse" value="'.$_POST["strasse"].'" required="required"/>
+				<input type="text" name="strasse" value="'.esc_attr($_POST["strasse"]).'" required="required"/>
 			</div>
 
 			<div>
@@ -376,10 +376,10 @@ function register() {
 				<div style="width: 100%;">
 					<div style="clear: both"></div>
 					<div style="width: 100px;">
-						<input type="text" style="width: 75px;float: left;" required="required" name="plz" value="'.$_POST["plz"].'"/>
+						<input type="text" style="width: 75px;float: left;" required="required" name="plz" value="'.esc_attr($_POST["plz"]).'"/>
 					</div>
 					<div style="margin-left: 80px;width: auto;">
-						<input type="text" style="width: 100%" required="required" name="ort" value="'.$_POST["ort"].'"/>
+						<input type="text" style="width: 100%" required="required" name="ort" value="'.esc_attr($_POST["ort"]).'"/>
 					</div>
 				</div>
 			</div>
@@ -420,7 +420,7 @@ function register() {
 
 			<div>
 				<span>(Hoch-)Schule:</span><br />
-				<input type="text" required="required" name="schule" value="'.$_POST["schule"].'"/>
+				<input type="text" required="required" name="schule" value="'.esc_attr($_POST["schule"]).'"/>
 				<div style="font-size: 0.8rem !important; font-style: normal">Falls Du keine Schüler:in/Student:in bist trage hier z.B. deine Arbeitsst&auml;tte ein</div>
 			</div>
 
@@ -444,7 +444,7 @@ function register() {
 				<input type="radio" name="food" value="Vegetarier" '.( $_POST["food"] == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier:in <br />
 				<input type="radio" name="food" value="Veganer" '.( $_POST["food"] == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer:in <br />
 				<input type="radio" name="food" value="2"'.( $_POST["food"] == "2" ? 'checked="checked"' : '' ).'/> Sonstiges:
-				<input type="text" name="food_sonst" value="'.$_POST["food_sonst"].'"/>
+				<input type="text" name="food_sonst" value="'.esc_attr($_POST["food_sonst"]).'"/>
 			</div>
 
 			<div>
@@ -456,12 +456,12 @@ function register() {
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "Messen" ? 'checked="checked"' : '' ).'value="Messen"/>&nbsp;...von Messen<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "RT-Labor" ? 'checked="checked"' : '' ).'value="RT-Labor"/>&nbsp;...vom RT-Labor<br />
 				<input type="radio" name="gotit" '.( $_POST["gotit"] == "6" ? 'checked="checked"' : '' ).'value="6"/>&nbsp;...von anderer Quelle<br />
-				<input type="text" name="gotit_sonst" value="'.$_POST["gotit_sonst"].'"/>
+				<input type="text" name="gotit_sonst" value="'.esc_attr($_POST["gotit_sonst"]).'"/>
 			</div>
 
 			<div>
 				<span>Sonstiges und Anmerkungen:</span>
-				<textarea style="width: 100%" name="sonstiges">'.$_POST["sonstiges"].'</textarea>
+				<textarea style="width: 100%" name="sonstiges">'.esc_textarea($_POST["sonstiges"]).'</textarea>
 			</div>
 
 			<div>

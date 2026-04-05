@@ -121,10 +121,10 @@ function teilnehmer(){
 					echo'
 						<tr>
 						    <td>
-								<button name="edit_teil" style="border: none; background: transparent;color: #0073aa" data-id="'.$t->getId().'">
+								<button name="edit_teil" style="border: none; background: transparent;color: #0073aa" data-id="'.esc_attr($t->getId()).'">
 										<i class="dashicons dashicons-welcome-write-blog"></i>
 									</button>
-								<button name="teil_delete" data-id="'.$t->getId().'" style="margin-left: 1px;border: none; background: transparent;color: #b00" data-name="' . $t->getNachname() .' '.$t->getVorname().'">
+								<button name="teil_delete" data-id="'.esc_attr($t->getId()).'" style="margin-left: 1px;border: none; background: transparent;color: #b00" data-name="'.esc_attr($t->getNachname().' '.$t->getVorname()).'">
 										<i class="dashicons dashicons-trash"></i>
 								</button>
 							</td>
@@ -143,19 +143,19 @@ function teilnehmer(){
                             }
 
 					echo'   </td>
-							<td>'.$t->getNachname().'</td>
-							<td>'.$t->getVorname().'</td>
-							<td>'.$t->getEmail().'</td>
-							<td>'.$t->getStr().'</td>
-							<td>'.$t->getPlz().' '.$t->getOrt().'</td>
-							<td data-order="'.strtotime($t->getGeb()).'">'.date("d.m.Y",strtotime($t->getGeb())).'</td>
-							<td>'.$t->getSchule().'</td>
+							<td>'.esc_html($t->getNachname()).'</td>
+							<td>'.esc_html($t->getVorname()).'</td>
+							<td>'.esc_html($t->getEmail()).'</td>
+							<td>'.esc_html($t->getStr()).'</td>
+							<td>'.esc_html($t->getPlz()).' '.esc_html($t->getOrt()).'</td>
+							<td data-order="'.esc_attr(strtotime($t->getGeb())).'">'.esc_html(date("d.m.Y",strtotime($t->getGeb()))).'</td>
+							<td>'.esc_html($t->getSchule()).'</td>
 							<td>'.($t->getIsCourseLeader() ? '<span style="color:#6a6">Ja</span>' : 'Nein').'</td>
-							<td>'.($t->getKurs() !== null ? $t->getKurs()->getName() : "Kein Kurs").'</td>
-							<td>'.$t->getEssen().'</td>
-							<td '.(strlen(trim($t->getSonstiges())) > 16 ? 'datatype="tooltip" title="'.htmlentities($t->getSonstiges()).'"' : '').'>'.(strlen(trim($t->getSonstiges())) > 16 ? htmlentities(substr($t->getSonstiges(),0,15)).'...' : htmlentities($t->getSonstiges())).'</td>
-							<td>'.$t->get_to_pay().'&euro;</td>
-							<td data-order="'.strtotime($t->getRegdate()).'">'.date("d.m.Y H:i:s",strtotime($t->getRegdate())).'</td>
+							<td>'.($t->getKurs() !== null ? esc_html($t->getKurs()->getName()) : "Kein Kurs").'</td>
+							<td>'.esc_html($t->getEssen()).'</td>
+							<td '.(strlen(trim($t->getSonstiges())) > 16 ? 'datatype="tooltip" title="'.esc_attr($t->getSonstiges()).'"' : '').'>'.esc_html(strlen(trim($t->getSonstiges())) > 16 ? substr($t->getSonstiges(),0,15).'...' : $t->getSonstiges()).'</td>
+							<td>'.esc_html($t->get_to_pay()).'&euro;</td>
+							<td data-order="'.esc_attr(strtotime($t->getRegdate())).'">'.esc_html(date("d.m.Y H:i:s",strtotime($t->getRegdate()))).'</td>
 							
 						</tr>
 					';

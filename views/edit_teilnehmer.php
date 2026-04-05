@@ -48,33 +48,33 @@ function edit_teilnehmer( $id ) {
 		
 			<div>
 				<span>Vorname:</span><br />
-				<input type="text" name="vorname" id="reg_vorname"  value="'.$teilnehmer->getVorname().'" required="required"/>
+				<input type="text" name="vorname" id="reg_vorname"  value="'.esc_attr($teilnehmer->getVorname()).'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>Nachname:</span><br />
-				<input type="text" name="nachname" id="reg_nachname"  value="'.$teilnehmer->getNachname().'" required="required"/>
+				<input type="text" name="nachname" id="reg_nachname"  value="'.esc_attr($teilnehmer->getNachname()).'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>EMail:</span><br />
-				<input type="email" name="email" id="reg_email"  value="'.$teilnehmer->getEmail().'" required="required"/>
+				<input type="email" name="email" id="reg_email"  value="'.esc_attr($teilnehmer->getEmail()).'" required="required"/>
 			</div>
-						
+
 			<div>
 				<span>Stra&szlig;e &amp; Hausnummer:</span><br />
-				<input type="text" name="strasse" id="reg_strasse"  value="'.$teilnehmer->getStr().'" required="required"/>
+				<input type="text" name="strasse" id="reg_strasse"  value="'.esc_attr($teilnehmer->getStr()).'" required="required"/>
 			</div>
-			
+
 			<div>
 				<span>PLZ / Ort:</span><br />
 				<div style="width: 100%;">
 					<div style="clear: both"></div>
 					<div style="width: 100px;">
-						<input type="text" style="width: 75px;float: left;" required="required" name="plz" id="reg_plz"  value="'.$teilnehmer->getPlz().'"/>
+						<input type="text" style="width: 75px;float: left;" required="required" name="plz" id="reg_plz"  value="'.esc_attr($teilnehmer->getPlz()).'"/>
 					</div>
 					<div style="margin-left: 80px;width: auto;">
-						<input type="text" style="width: 100%" required="required" name="ort" id="reg_ort"  value="'.$teilnehmer->getOrt().'"/>
+						<input type="text" style="width: 100%" required="required" name="ort" id="reg_ort"  value="'.esc_attr($teilnehmer->getOrt()).'"/>
 					</div>
 				</div>
 			</div>
@@ -103,13 +103,13 @@ function edit_teilnehmer( $id ) {
 			
 			<div>
 				<span>Ich bin:</span><br />			
-				<input type="radio" name="paytype" value="1" '.( $teilnehmer->get_paytype() == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler:in/Student:in (<b>Teilnahmebeitrag:&nbsp;'.$options->getTeilnahmePreis().'€</b>)<br />
-				<input type="radio" name="paytype" value="2" '.( $teilnehmer->get_paytype() == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.$options->get_teilnahme_preis_alumni().'€</b>)
+				<input type="radio" name="paytype" value="1" '.( $teilnehmer->get_paytype() == 1 ? 'checked="checked"' : '' ).' required="required" /> Schüler:in/Student:in (<b>Teilnahmebeitrag:&nbsp;'.esc_html($options->getTeilnahmePreis()).'€</b>)<br />
+				<input type="radio" name="paytype" value="2" '.( $teilnehmer->get_paytype() == 2 ? 'checked="checked"' : '' ).' /> Alumni (<b>Teilnahmebeitrag:&nbsp;'.esc_html($options->get_teilnahme_preis_alumni()).'€</b>)
 			</div>
 			
 			<div>
 				<span>(Hoch-)Schule:</span><br />
-				<input type="text" required="required" name="schule" id="reg_schule"  value="'.$teilnehmer->getSchule().'"/>
+				<input type="text" required="required" name="schule" id="reg_schule"  value="'.esc_attr($teilnehmer->getSchule()).'"/>
 			</div>
 			
 			<div>
@@ -117,7 +117,7 @@ function edit_teilnehmer( $id ) {
 				<select style="width: 100%" name="kurs" id="reg_kurs" >';
 
 		foreach ( $kurse as $kurs ) {
-			$ret .= '<option value="'.$kurs->getId().'" '.( $kurs->getId() == $teilnehmer->getKurs()->getId() ? 'selected="selected"' : '' ).' >'.$kurs->getName().' ( '.( $kurs->getMaxTeilnehmer() - $kurs->getTeilnehmer() ).' Pl&auml;tze frei )</option>';
+			$ret .= '<option value="'.esc_attr($kurs->getId()).'" '.( $kurs->getId() == $teilnehmer->getKurs()->getId() ? 'selected="selected"' : '' ).' >'.esc_html($kurs->getName()).' ( '.esc_html( $kurs->getMaxTeilnehmer() - $kurs->getTeilnehmer() ).' Pl&auml;tze frei )</option>';
 		}
 
 		$ret .= '</select>	
@@ -130,7 +130,7 @@ function edit_teilnehmer( $id ) {
 				<input type="radio" name="food" value="Vegetarier" '.( $teilnehmer->getEssen() == "Vegetarier" ? 'checked="checked"' : '' ).'/> Vegetarier:in <br />
 				<input type="radio" name="food" value="Veganer" '.( $teilnehmer->getEssen() == "Veganer" ? 'checked="checked"' : '' ).'/> Veganer:in <br />
 				<input type="radio" name="food" value="2" '.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" && $teilnehmer->getEssen() != "Veganer" ? 'checked="checked"' : '' ).'/> Sonstiges:
-				<input type="text" name="food_sonst" id="reg_food_sonst"  value="'.( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" && $teilnehmer->getEssen() != "Veganer" ? $teilnehmer->getEssen() : "" ).'"/>
+				<input type="text" name="food_sonst" id="reg_food_sonst"  value="'.esc_attr( $teilnehmer->getEssen() != "Kein Vegetarier" && $teilnehmer->getEssen() != "Vegetarier" && $teilnehmer->getEssen() != "Veganer" ? $teilnehmer->getEssen() : "" ).'"/>
 			</div>	
 						
 			<div>
@@ -142,12 +142,12 @@ function edit_teilnehmer( $id ) {
 				<input type="radio" name="gotit" '.( $teilnehmer->getGotit() == "Messen" ? 'checked="checked"' : '' ).'value="Messen"/>&nbsp;...von Messen<br />
 				<input type="radio" name="gotit" '.( $teilnehmer->getGotit() == "RT-Labor" ? 'checked="checked"' : '' ).'value="RT-Labor"/>&nbsp;...vom RT-Labor<br />
 				<input type="radio" name="gotit" '.( !in_array( $teilnehmer->getGotit(), $gotit ) ? 'checked="checked"' : '' ).'value="6"/>&nbsp;...von anderer Quelle<br />
-				<input type="text" name="gotit_sonst" id="reg_gotit_sonst"  value="'.( !in_array( $teilnehmer->getGotit(), $gotit ) ? $teilnehmer->getGotit() : '' ).'"/>
+				<input type="text" name="gotit_sonst" id="reg_gotit_sonst"  value="'.esc_attr( !in_array( $teilnehmer->getGotit(), $gotit ) ? $teilnehmer->getGotit() : '' ).'"/>
 			</div>	
 			
 			<div>
 				<span>Sonstiges und Anmerkungen:</span>
-				<textarea style="width: 100%" name="sonstiges" id="reg_sonstiges" >'.$teilnehmer->getSonstiges().'</textarea>
+				<textarea style="width: 100%" name="sonstiges" id="reg_sonstiges" >'.esc_textarea($teilnehmer->getSonstiges()).'</textarea>
 			</div>
 			
 			<div style="display:flex;align-items:center;gap:10px;margin-top:4px;">

@@ -39,7 +39,7 @@ jQuery(document).ready(function(){
 
                 jQuery.post(
                     ajax_object.ajaxurl,
-                    jQuery('*[id^="reg_"]').serialize()+'&action=ajax_action&'+jQuery('input[type="radio"]:checked').serialize()
+                    jQuery('*[id^="reg_"]').serialize()+'&action=ajax_action&nonce='+encodeURIComponent(ajax_object.nonce)+'&'+jQuery('input[type="radio"]:checked').serialize()
                     , function(data){
 
                         $loading.dialog('close');
@@ -90,6 +90,7 @@ jQuery(document).ready(function(){
                 ajax_object.ajaxurl,
                 {
                     'action': 'ajax_action',
+                    'nonce': ajax_object.nonce,
                     'value': jQuery(this).attr("data-id"),
                     'do':'delete'
                 }, function(data){
@@ -114,6 +115,7 @@ jQuery(document).ready(function(){
             ajax_object.ajaxurl,
             {
                 'action': 'ajax_action',
+                'nonce': ajax_object.nonce,
                 'value': jQuery(this).attr("data-id")
             }, function(data){
 

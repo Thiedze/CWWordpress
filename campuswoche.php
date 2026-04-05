@@ -120,10 +120,17 @@ function load_scripts() {
 	wp_enqueue_media();
 
 	wp_enqueue_script('ajax-script',plugins_url("/js/teilnehmer.js",__FILE__),array('jquery'));
-	wp_localize_script('ajax-script','ajax_object',array('ajaxurl'=>admin_url('admin-ajax.php')));
+	wp_localize_script('ajax-script','ajax_object',array(
+		'ajaxurl' => admin_url('admin-ajax.php'),
+		'nonce'   => wp_create_nonce('cw_teilnehmer_nonce'),
+	));
 }
 
 function do_ajax(){
+	check_ajax_referer('cw_teilnehmer_nonce', 'nonce');
+	if ( ! current_user_can('cw_allow') ) {
+		wp_die('', '', array('response' => 403));
+	}
 
     if(isset($_POST["save"])){
         if($_POST["save"] == "done"){
@@ -137,8 +144,8 @@ function do_ajax(){
             }
         }
 
-        if (preg_match("/\d+/", $_POST["value"])) {
-            echo edit_teilnehmer($_POST["value"]);
+        if ( isset($_POST["value"]) && ctype_digit((string)$_POST["value"]) ) {
+            echo edit_teilnehmer(intval($_POST["value"]));
         }
     }
 	wp_die();
