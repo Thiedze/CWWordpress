@@ -212,4 +212,4 @@ campuswoche/
 
 ## License
 
-GPL
+[MIT](LICENSE.md)
