@@ -116,7 +116,7 @@ function get_all_teilnehmer(){
 	global $wpdb;
 	$res = array();
 
-	$results = $wpdb->get_results("SELECT id FROM ".$wpdb->prefix."cw_user ORDER BY nachname ASC");
+	$results = $wpdb->get_results("SELECT id FROM ".$wpdb->prefix."cw_user ORDER BY regdate DESC");
 
 	if($results){
 		$i = -1;

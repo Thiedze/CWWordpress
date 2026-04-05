@@ -10,7 +10,7 @@ jQuery(document).ready(function(){
     var table = jQuery('#sorttable').DataTable({
         autoWidth: false,
         responsive: false,
-        order: [],
+        order: [[14, 'desc']],
         destroy: true,
         lengthChange: false,
         paging: false,
