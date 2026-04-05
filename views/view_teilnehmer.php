@@ -96,9 +96,8 @@ function teilnehmer(){
 						    <th data-orderable="false">
 								&nbsp;
 							</th>
-							<th data-orderable="false">
-							    &nbsp;
-							</th>
+							<th>Typ</th>
+							<th>Bezahlt</th>
 							<th>Nachname</th>
 							<th>Vorname</th>
 							<th>EMail</th>
@@ -128,13 +127,16 @@ function teilnehmer(){
 										<i class="dashicons dashicons-trash"></i>
 								</button>
 							</td>
-							<td style="width: 75px">';
+							<td data-order="'.esc_attr($t->get_paytype()).'">';
 
 							if($t->get_paytype() == 2){
 								echo '<i title="Alumni" class="dashicons dashicons-welcome-learn-more" style="color: goldenrod"></i>';
 							}else{
 								echo '<i title="Schüler:in/Student:in" class="dashicons dashicons-welcome-learn-more"></i>';
 							}
+
+					echo'   </td>
+							<td data-order="'.esc_attr($t->getPayed()).'">';
 
                             if($t->getPayed() == 1){
                                 echo '<img title="Bezahlt" src="'.plugin_dir_url(__FILE__).'../img/money.png'.'"/>';
