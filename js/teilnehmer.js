@@ -7,15 +7,24 @@ var $errdialog;
 
 jQuery(document).ready(function(){
 
-    jQuery('#sorttable').DataTable({
-        scrollX: true,
+    var table = jQuery('#sorttable').DataTable({
         autoWidth: false,
+        responsive: false,
         order: [],
         destroy: true,
         lengthChange: false,
         paging: false,
         info: false,
         searching: false
+    });
+
+    var resizeTimer;
+    jQuery(window).on('resize', function(){
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function(){
+            jQuery('#sorttable').css('width', '100%');
+            table.columns.adjust().draw(false);
+        }, 100);
     });
 
     $module = jQuery('<div id="modal" style="width:100%;font-size:10pt;overflow:auto">ROFL</div>').dialog({

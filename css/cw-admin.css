@@ -52,6 +52,10 @@ table.dataTable > tbody tr.odd{
     background: #eaeaea;
 }
 
+table#sorttable {
+    width: 100% !important;
+}
+
 .register > div {
     margin-bottom: 15px;
     overflow: auto;
