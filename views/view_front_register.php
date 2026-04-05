@@ -234,12 +234,20 @@ function register() {
 		}
 
 		if ( isset( $_POST["gbd"] ) && isset( $_POST["gbm"] ) && isset( $_POST["gby"] ) ) {
-			$geb_check  = $_POST["gby"] . '-' . ( $_POST["gbm"] < 10 ? '0' . $_POST["gbm"] : $_POST["gbm"] ) . '-' . ( $_POST["gbd"] < 10 ? '0' . $_POST["gbd"] : $_POST["gbd"] );
-			$ref_date   = $options->getCwStart() ? $options->getCwStart() : 'today';
-			$age        = date_diff( date_create( $geb_check ), date_create( $ref_date ) )->y;
-			if ( $age < 16 ) {
+			$gbd = absint( $_POST["gbd"] );
+			$gbm = absint( $_POST["gbm"] );
+			$gby = absint( $_POST["gby"] );
+			if ( $gbd < 1 || $gbd > 31 || $gbm < 1 || $gbm > 12 || $gby < 1900 || $gby > date('Y') ) {
 				$error     = true;
-				$error_msg .= '<li>Du musst zum Start der Campuswoche mindestens 16 Jahre alt sein</li>';
+				$error_msg .= '<li>Bitte gib ein g&uuml;ltiges Geburtsdatum ein</li>';
+			} else {
+				$geb_check = $gby . '-' . ( $gbm < 10 ? '0' . $gbm : $gbm ) . '-' . ( $gbd < 10 ? '0' . $gbd : $gbd );
+				$ref_date  = $options->getCwStart() ? $options->getCwStart() : 'today';
+				$age       = date_diff( date_create( $geb_check ), date_create( $ref_date ) )->y;
+				if ( $age < 16 ) {
+					$error     = true;
+					$error_msg .= '<li>Du musst zum Start der Campuswoche mindestens 16 Jahre alt sein</li>';
+				}
 			}
 		}
 
@@ -255,30 +263,38 @@ function register() {
 			';
 		} else {
 
-			$geb = $_POST["gby"].'-'.( $_POST["gbm"]<10 ? '0'.$_POST["gbm"] : $_POST["gbm"] ).'-'.( $_POST["gbd"]<10 ? '0'.$_POST["gbd"] : $_POST["gbd"] );
+			$gbd = absint( $_POST["gbd"] );
+			$gbm = absint( $_POST["gbm"] );
+			$gby = absint( $_POST["gby"] );
+			$geb = $gby . '-' . ( $gbm < 10 ? '0' . $gbm : $gbm ) . '-' . ( $gbd < 10 ? '0' . $gbd : $gbd );
+
+			$allowed_food  = array( 'Kein Vegetarier', 'Vegetarier', 'Veganer' );
+			$allowed_gotit = array( 'Flyer/Plakate', 'Freunde', 'Zeitung', 'Lehrer/Dozenten', 'Messen', 'RT-Labor' );
+			$food  = sanitize_text_field( $_POST["food"] ?? '' );
+			$gotit = sanitize_text_field( $_POST["gotit"] ?? '' );
 
 			$teilnehmer = new Teilnehmer( $wpdb );
 
-			$teilnehmer->setVorname( $_POST["vorname"] );
-			$teilnehmer->setNachname( $_POST["nachname"] );
-			$teilnehmer->setEmail( $_POST["email"] );
-			$teilnehmer->setStr( $_POST["strasse"] );
-			$teilnehmer->setPlz( $_POST["plz"] );
-			$teilnehmer->setOrt( $_POST["ort"] );
+			$teilnehmer->setVorname( sanitize_text_field( $_POST["vorname"] ?? '' ) );
+			$teilnehmer->setNachname( sanitize_text_field( $_POST["nachname"] ?? '' ) );
+			$teilnehmer->setEmail( sanitize_email( $_POST["email"] ?? '' ) );
+			$teilnehmer->setStr( sanitize_text_field( $_POST["strasse"] ?? '' ) );
+			$teilnehmer->setPlz( sanitize_text_field( $_POST["plz"] ?? '' ) );
+			$teilnehmer->setOrt( sanitize_text_field( $_POST["ort"] ?? '' ) );
 			$teilnehmer->setGeb( $geb );
-			$teilnehmer->setSchule( $_POST["schule"] );
-			$teilnehmer->setEssen( ( $_POST["food"] != "2" ? $_POST["food"] : $_POST["food_sonst"] ) );
-			$teilnehmer->setGotit( ( $_POST["gotit"] ) != "6" ? $_POST["gotit"] : $_POST["gotit_sonst"] );
-			$teilnehmer->setSonstiges( $_POST["sonstiges"] );
+			$teilnehmer->setSchule( sanitize_text_field( $_POST["schule"] ?? '' ) );
+			$teilnehmer->setEssen( in_array( $food, $allowed_food ) ? $food : sanitize_text_field( $_POST["food_sonst"] ?? '' ) );
+			$teilnehmer->setGotit( in_array( $gotit, $allowed_gotit ) ? $gotit : sanitize_text_field( $_POST["gotit_sonst"] ?? '' ) );
+			$teilnehmer->setSonstiges( sanitize_textarea_field( $_POST["sonstiges"] ?? '' ) );
 			$teilnehmer->setUuid( sha1( uniqid( "CW", true ) ) );
-			$teilnehmer->set_paytype( $_POST["paytype"] );
+			$teilnehmer->set_paytype( absint( $_POST["paytype"] ?? 1 ) );
 			$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
 			$teilnehmer->set_to_pay( $tnp );
 			$teilnehmer->save();
 			$teilnehmer->get_id_from_uuid();
 
 			$regkurs = new Kurs( $wpdb );
-			$regkurs->load( $_POST["kurs"] );
+			$regkurs->load( absint( $_POST["kurs"] ?? 0 ) );
 			$teilnehmer->setKurs( $regkurs );
 			$teilnehmer->setPayed( 0 );
 
