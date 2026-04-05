@@ -482,15 +482,14 @@ function register() {
 				<p>&nbsp;</p>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
-				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900">
+				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900;margin-bottom:10px">
 					<input type="checkbox" required="required" name="check1" value="ok"/>&nbsp;
 					Ich habe die <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2016/04/DSEVorlageCampuswoche.pdf">Datenschutzerkl&auml;rung</a> gelesen, verstanden und akzeptiere diese!
 				</div>
-				<br />
-				<div id="check2-container" style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900;display:none">
+				<div id="check2-container" style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900;display:none;margin-bottom:10px">
 					<input type="checkbox" name="check2" value="ok"/>&nbsp;
-					Ich werde unverz&uuml;glich nach dieser Anmeldung die unterschriebene <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2024/03/Einverstaendniserklaerung-einer_eines-Erziehungsberechtigten-1.pdf">Einverst&auml;ndniserkl&auml;rung</a> dem Campuswochen Orga Team zusenden.				</div>
-				<br />
+					Ich werde unverz&uuml;glich nach dieser Anmeldung die unterschriebene <a target="_blank" href="https://campuswoche.de/wp-content/uploads/2024/03/Einverstaendniserklaerung-einer_eines-Erziehungsberechtigten-1.pdf">Einverst&auml;ndniserkl&auml;rung</a> dem Campuswochen Orga Team zusenden.
+				</div>
 				<div style="background: #fcc;padding: 10px;font-weight: bold;border: 1px solid #900">
 					<input type="checkbox" required="required" name="check3" value="ok"/>&nbsp;
 					Den Teilnahmebetrag von <span id="tnb"></span>&euro; werde ich umgehend &uuml;berweisen.
