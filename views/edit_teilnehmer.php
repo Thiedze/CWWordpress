@@ -182,30 +182,39 @@ function save_edit() {
 	$options    = new Options( $wpdb );
 	$options->load();
 
-	if ( $teilnehmer->load( $_POST["id"] ) ) {
+	if ( $teilnehmer->load( absint( $_POST["id"] ) ) ) {
 
-		$geb = $_POST["gby"].'-'.( $_POST["gbm"]<10 ? '0'.$_POST["gbm"] : $_POST["gbm"] ).'-'.( $_POST["gbd"]<10 ? '0'.$_POST["gbd"] : $_POST["gbd"] );
+		$gby = absint( $_POST["gby"] );
+		$gbm = absint( $_POST["gbm"] );
+		$gbd = absint( $_POST["gbd"] );
+		$geb = $gby . '-' . ( $gbm < 10 ? '0' . $gbm : $gbm ) . '-' . ( $gbd < 10 ? '0' . $gbd : $gbd );
 
-		$teilnehmer->setVorname( $_POST["vorname"] );
-		$teilnehmer->setNachname( $_POST["nachname"] );
-		$teilnehmer->setEmail( $_POST["email"] );
-		$teilnehmer->setStr( $_POST["strasse"] );
-		$teilnehmer->setPlz( $_POST["plz"] );
-		$teilnehmer->setOrt( $_POST["ort"] );
+		$allowed_food  = array( 'Kein Vegetarier', 'Vegetarier', 'Veganer' );
+		$allowed_gotit = array( 'Flyer/Plakate', 'Freunde', 'Zeitung', 'Lehrer/Dozenten', 'Messen', 'RT-Labor' );
+
+		$food  = sanitize_text_field( $_POST["food"] ?? '' );
+		$gotit = sanitize_text_field( $_POST["gotit"] ?? '' );
+
+		$teilnehmer->setVorname( sanitize_text_field( $_POST["vorname"] ?? '' ) );
+		$teilnehmer->setNachname( sanitize_text_field( $_POST["nachname"] ?? '' ) );
+		$teilnehmer->setEmail( sanitize_email( $_POST["email"] ?? '' ) );
+		$teilnehmer->setStr( sanitize_text_field( $_POST["strasse"] ?? '' ) );
+		$teilnehmer->setPlz( sanitize_text_field( $_POST["plz"] ?? '' ) );
+		$teilnehmer->setOrt( sanitize_text_field( $_POST["ort"] ?? '' ) );
 		$teilnehmer->setGeb( $geb );
-		$teilnehmer->setSchule( $_POST["schule"] );
-		$teilnehmer->setEssen( ( $_POST["food"] != "2" ? $_POST["food"] : $_POST["food_sonst"] ) );
-		$teilnehmer->setGotit( ( $_POST["gotit"] ) != "6" ? $_POST["gotit"] : $_POST["gotit_sonst"] );
-		$teilnehmer->setSonstiges( $_POST["sonstiges"] );
-		$teilnehmer->setPayed( ( isset( $_POST["payed"] ) ? $_POST["payed"] : 0 ) );
+		$teilnehmer->setSchule( sanitize_text_field( $_POST["schule"] ?? '' ) );
+		$teilnehmer->setEssen( in_array( $food, $allowed_food ) ? $food : sanitize_text_field( $_POST["food_sonst"] ?? '' ) );
+		$teilnehmer->setGotit( in_array( $gotit, $allowed_gotit ) ? $gotit : sanitize_text_field( $_POST["gotit_sonst"] ?? '' ) );
+		$teilnehmer->setSonstiges( sanitize_textarea_field( $_POST["sonstiges"] ?? '' ) );
+		$teilnehmer->setPayed( isset( $_POST["payed"] ) ? 1 : 0 );
 		$teilnehmer->setIsCourseLeader( isset( $_POST["is_course_leader"] ) ? 1 : 0 );
-		$teilnehmer->set_paytype( $_POST["paytype"] );
+		$teilnehmer->set_paytype( absint( $_POST["paytype"] ?? 1 ) );
 
 		$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
 		$teilnehmer->set_to_pay( $tnp );
 
 		$regkurs = new Kurs( $wpdb );
-		$regkurs->load( $_POST["kurs"] );
+		$regkurs->load( absint( $_POST["kurs"] ?? 0 ) );
 		$teilnehmer->setKurs( $regkurs );
 
 		$teilnehmer->save();

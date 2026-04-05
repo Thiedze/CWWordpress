@@ -189,8 +189,8 @@ class Teilnehmer {
 
 	public function delete(){
 	    if($this->id > 0){
-            $this->db->query("DELETE FROM ".$this->db->prefix."cw_user_kurs WHERE user_id=".$this->id);
-            $this->db->query("DELETE FROM ".$this->db->prefix."cw_user WHERE id=".$this->id);
+            $this->db->query($this->db->prepare("DELETE FROM ".$this->db->prefix."cw_user_kurs WHERE user_id=%d", $this->id));
+            $this->db->query($this->db->prepare("DELETE FROM ".$this->db->prefix."cw_user WHERE id=%d", $this->id));
         }
     }
 

@@ -127,7 +127,10 @@ function new_program(){
 
 		if($error == false) {
 
-			$res = $wpdb->get_row( "SELECT count(*) AS c FROM " . $wpdb->prefix . "cw_events WHERE event_day=" . $_POST["event_day"] . " AND (" . $_POST["event_start"] . " BETWEEN event_start AND event_end-1 OR " . $_POST["event_end"] . " BETWEEN event_start+1 AND event_end)" );
+			$res = $wpdb->get_row( $wpdb->prepare(
+				"SELECT count(*) AS c FROM " . $wpdb->prefix . "cw_events WHERE event_day=%d AND (%d BETWEEN event_start AND event_end-1 OR %d BETWEEN event_start+1 AND event_end)",
+				intval($_POST["event_day"]), intval($_POST["event_start"]), intval($_POST["event_end"])
+			) );
 
 			if ( $res->c >= 1 ) {
 				$error    = true;
@@ -343,7 +346,10 @@ function edit_program(){
 
 		if($error == false) {
 
-			$res = $wpdb->get_row( "SELECT count(*) AS c FROM " . $wpdb->prefix . "cw_events WHERE event_day=" . $_POST["event_day"] . " AND (" . $_POST["event_start"] . " BETWEEN event_start AND event_end-1 OR " . $_POST["event_end"] . " BETWEEN event_start+1 AND event_end) AND id <> ".$_POST["eid"] );
+			$res = $wpdb->get_row( $wpdb->prepare(
+				"SELECT count(*) AS c FROM " . $wpdb->prefix . "cw_events WHERE event_day=%d AND (%d BETWEEN event_start AND event_end-1 OR %d BETWEEN event_start+1 AND event_end) AND id <> %d",
+				intval($_POST["event_day"]), intval($_POST["event_start"]), intval($_POST["event_end"]), intval($_POST["eid"])
+			) );
 
 			if ( $res->c >= 1 ) {
 				$error    = true;

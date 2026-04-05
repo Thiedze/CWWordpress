@@ -62,7 +62,7 @@ function get_all_events_by_day($day_id){
 	$ret = array();
 	$i = -1;
 
-	if($obj = $wpdb->get_results("SELECT id FROM ".$wpdb->prefix."cw_events WHERE event_day=".$day_id." ORDER BY event_start,event_end ASC")){
+	if($obj = $wpdb->get_results($wpdb->prepare("SELECT id FROM ".$wpdb->prefix."cw_events WHERE event_day=%d ORDER BY event_start,event_end ASC", intval($day_id)))){
 
 		foreach ( $obj as $res ) {
 			$i++;
@@ -85,7 +85,7 @@ function get_all_teilnehmer_by_kurs($kursid){
     global $wpdb;
     $res = array();
 
-    $results = $wpdb->get_results("SELECT u.id FROM ".$wpdb->prefix."cw_user_kurs uk LEFT JOIN ".$wpdb->prefix."cw_user u ON uk.user_id=u.id WHERE uk.kurs_id=".$kursid." ORDER BY u.vorname ASC");
+    $results = $wpdb->get_results($wpdb->prepare("SELECT u.id FROM ".$wpdb->prefix."cw_user_kurs uk LEFT JOIN ".$wpdb->prefix."cw_user u ON uk.user_id=u.id WHERE uk.kurs_id=%d ORDER BY u.vorname ASC", intval($kursid)));
 
     if($results){
         $i = -1;
