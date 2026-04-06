@@ -42,7 +42,7 @@ class Export_XLS {
 			$sheet->setCellValue( 'B2', "Vorname", null )->getStyle( 'B2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'C2', "Email", null )->getStyle( 'C2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'D2', "Alter", null )->getStyle( 'D2' )->getFont()->setBold( true );
-			$sheet->setCellValue( 'E2', "(Hoch-)Schule", null )->getStyle( 'E2' )->getFont()->setBold( true );
+			$sheet->setCellValue( 'E2', "(Hoch-)Schule/Arbeitsstätte", null )->getStyle( 'E2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'F2', "Sonstiges", null )->getStyle( 'F2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'G2', "Registrierdatum", null )->getStyle( 'G2' )->getFont()->setBold( true );
 			$sheet->setCellValue( 'H2', "Schüler:in/Student:in", null )->getStyle( 'H2' )->getFont()->setBold( true );
@@ -117,7 +117,7 @@ class Export_XLS {
 			$sheet->setCellValue( 'F1', "Ort", null )->getStyle('F1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'G1', "Geburtsdatum", null )->getStyle('G1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'H1', "Alter", null )->getStyle('H1')->getFont()->setBold( true );
-			$sheet->setCellValue( 'I1', "(Hoch-)Schule", null )->getStyle('I1')->getFont()->setBold( true );
+			$sheet->setCellValue( 'I1', "(Hoch-)Schule/Arbeitsstätte", null )->getStyle('I1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'J1', "Kurs", null )->getStyle('J1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'K1', "Essen", null )->getStyle('K1')->getFont()->setBold( true );
 			$sheet->setCellValue( 'L1', "Sonstiges", null )->getStyle('L1')->getFont()->setBold( true );

@@ -108,7 +108,7 @@ function edit_teilnehmer( $id ) {
 			</div>
 			
 			<div>
-				<span>(Hoch-)Schule:</span><br />
+				<span>(Hoch-)Schule/Arbeitsstätte:</span><br />
 				<input type="text" required="required" name="schule" id="reg_schule"  value="'.esc_attr($teilnehmer->getSchule()).'"/>
 			</div>
 			

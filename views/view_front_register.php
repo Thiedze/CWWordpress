@@ -158,11 +158,11 @@ function register() {
 
 		if ( !isset( $_POST["schule"] ) ) {
 			$error     = true;
-			$error_msg .= '<li>Es wurde keine (Hoch-)Schule angegeben</li>';
+			$error_msg .= '<li>Es wurde keine (Hoch-)Schule/Arbeitsstätte angegeben</li>';
 		} else {
 			if ( strlen( trim( $_POST["schule"] ) ) == 0 ) {
 				$error     = true;
-				$error_msg .= '<li>Es wurde keine (Hoch-)Schule angegeben</li>';
+				$error_msg .= '<li>Es wurde keine (Hoch-)Schule/Arbeitsstätte angegeben</li>';
 			}
 		}
 
@@ -435,9 +435,8 @@ function register() {
 			</div>
 
 			<div>
-				<span>(Hoch-)Schule:</span><br />
+				<span>(Hoch-)Schule/Arbeitsstätte:</span><br />
 				<input type="text" required="required" name="schule" value="'.esc_attr($_POST["schule"]).'"/>
-				<div style="font-size: 0.8rem !important; font-style: normal">Falls Du keine Schüler:in/Student:in bist trage hier z.B. deine Arbeitsst&auml;tte ein</div>
 			</div>
 
 			<div>

@@ -53,7 +53,7 @@ function tkurs(){
 							<a>Alter</a>
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 20%">
-							<a>Schule</a>
+							<a>(Hoch-)Schule/Arbeitsstätte</a>
 						</th>
 						<th style="border-right: 1px solid #eaeaea;width: 20%">
 							<a>Sonstiges</a>

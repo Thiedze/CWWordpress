@@ -104,7 +104,7 @@ function teilnehmer(){
 							<th>Adresse</th>
 							<th>PLZ/Ort</th>
 							<th>Geburtsdatum</th>
-							<th>(Hoch-)Schule</th>
+							<th>(Hoch-)Schule/Arbeitsstätte</th>
 							<th>Kursleiter:in</th>
 							<th>Kurs</th>
 							<th>Essen</th>
