@@ -42,6 +42,7 @@ add_action('wp_ajax_cw_kurs_save',   'cw_kurs_save_handler');
 add_action('wp_ajax_cw_kurs_delete', 'cw_kurs_delete_handler');
 add_action('wp_ajax_cw_event_load',  'cw_event_load_handler');
 add_action('wp_ajax_cw_event_save',  'cw_event_save_handler');
+add_action('wp_ajax_cw_get_history', 'cw_get_history_handler');
 add_action('deactivate_plugin','plugin_deactivate');
 add_action('admin_menu', 'cwplugin');
 add_action('wp_ajax_ajax_action','do_ajax');
@@ -113,7 +114,7 @@ function load_scripts() {
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'nonce'   => wp_create_nonce('cw_kurs_nonce'),
 	) );
-	wp_enqueue_script( 'cw-admin.js', plugins_url( "/js/cw-admin.js", __FILE__ ) );
+	wp_enqueue_script( 'cw-admin.js', plugins_url( "/js/cw-admin.js", __FILE__ ), array(), filemtime( plugin_dir_path( __FILE__ ) . 'js/cw-admin.js' ) );
 	wp_enqueue_script( 'cal.js', plugins_url( "/js/cal.js", __FILE__ ) );
 	wp_enqueue_script( 'admin-cal.js', plugins_url( "/js/admin_cal.js", __FILE__ ), array('jquery','jquery-ui-draggable','jquery-ui-resizable','jquery-ui-dialog') );
 	//wp_enqueue_script( 'teilnehmer.js', plugins_url( "/js/teilnehmer.js", __FILE__ ) );
@@ -123,6 +124,11 @@ function load_scripts() {
 	wp_localize_script('ajax-script','ajax_object',array(
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'nonce'   => wp_create_nonce('cw_teilnehmer_nonce'),
+	));
+
+	wp_localize_script('cw-admin.js', 'cw_history', array(
+		'ajaxurl' => admin_url('admin-ajax.php'),
+		'nonce'   => wp_create_nonce('cw_history_nonce'),
 	));
 }
 
@@ -155,6 +161,7 @@ function plugin_activate(){
     global $wpdb;
     init_database($wpdb);
 }
+
 
 function plugin_deactivate(){
     //flush_rewrite_rules();
@@ -223,7 +230,17 @@ function cw_kurs_save_handler() {
 	$needs_course_leader = empty($_POST['needs_course_leader']) ? 0 : 1;
 	if (empty($name)) wp_send_json_error('Bitte einen Kursnamen angeben.');
 	$kurs = new Kurs($wpdb);
-	if ($kid > 0) $kurs->load($kid);
+	$old  = [];
+	if ($kid > 0) {
+		$kurs->load($kid);
+		$old = array(
+			'Name'              => $kurs->getName(),
+			'Max. Teilnehmer'   => $kurs->getMaxTeilnehmer(),
+			'Sichtbar'          => $kurs->getShowFront(),
+			'Offen'             => $kurs->getIs_open(),
+			'Kursleiter nötig'  => $kurs->getNeedsCourseLeader(),
+		);
+	}
 	$kurs->setName($name);
 	$kurs->setMaxTeilnehmer($mteil);
 	$kurs->setShowFront($show_front);
@@ -231,8 +248,29 @@ function cw_kurs_save_handler() {
 	$kurs->setBild($bild);
 	$kurs->setBeschreibung($beschreibung);
 	$kurs->setNeedsCourseLeader($needs_course_leader);
-	if ($kurs->save()) wp_send_json_success();
-	else wp_send_json_error('Fehler beim Speichern.');
+	if ($kurs->save()) {
+		if ($kid > 0) {
+			$new = array(
+				'Name'             => $name,
+				'Max. Teilnehmer'  => $mteil,
+				'Sichtbar'         => $show_front,
+				'Offen'            => $is_open,
+				'Kursleiter nötig' => $needs_course_leader,
+			);
+			$diff = [];
+			foreach ($old as $k => $v) {
+				if ((string)$v !== (string)$new[$k]) {
+					$diff[] = $k . ': ' . $v . ' → ' . $new[$k];
+				}
+			}
+			cw_log_history('kurs', $kid, $name, 'update', implode(', ', $diff));
+		} else {
+			cw_log_history('kurs', $wpdb->insert_id, $name, 'create', '');
+		}
+		wp_send_json_success();
+	} else {
+		wp_send_json_error('Fehler beim Speichern.');
+	}
 }
 
 function cw_kurs_delete_handler() {
@@ -241,8 +279,10 @@ function cw_kurs_delete_handler() {
 	global $wpdb;
 	$kid = intval($_POST['kid'] ?? 0);
 	if ($kid <= 1) wp_send_json_error('Der Kurs "Sonstiges" kann nicht gel&ouml;scht werden.');
+	$kurs_name = $wpdb->get_var($wpdb->prepare("SELECT name FROM ".$wpdb->prefix."cw_kurse WHERE id=%d", $kid));
 	$wpdb->query($wpdb->prepare("DELETE FROM ".$wpdb->prefix."cw_kurse WHERE id=%d", $kid));
 	$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->prefix."cw_user_kurs SET kurs_id=0 WHERE kurs_id=%d OR kurs_id IS NULL", $kid));
+	cw_log_history('kurs', $kid, (string)$kurs_name, 'delete', '');
 	wp_send_json_success();
 }
 
@@ -385,6 +425,63 @@ function cw_event_save_handler() {
 	$event->setEventColor($color);
 	if ($event->save()) wp_send_json_success();
 	else wp_send_json_error('Fehler beim Speichern.');
+}
+
+/**
+ * Schreibt einen Eintrag in die Änderungshistorie.
+ *
+ * @param string $entity_type  'kurs' | 'teilnehmer'
+ * @param int    $entity_id    ID des betroffenen Datensatzes
+ * @param string $entity_name  Lesbarer Name (Kursname / Teilnehmername)
+ * @param string $action       'create' | 'update' | 'delete'
+ * @param string $changes      Optionale Zusammenfassung der Änderungen
+ * @param int    $user_id      WP-User-ID (0 = Frontend-Registrierung)
+ * @param string $user_name    Anzeigename des Nutzers
+ */
+function cw_log_history($entity_type, $entity_id, $entity_name, $action, $changes = '', $user_id = null, $user_name = null) {
+	global $wpdb;
+	if ($user_id === null) {
+		$user = wp_get_current_user();
+		$user_id   = (int) $user->ID;
+		$user_name = $user->display_name ?: $user->user_login;
+	}
+	$wpdb->insert(
+		$wpdb->prefix . 'cw_history',
+		array(
+			'ts'          => current_time('mysql'),
+			'user_id'     => $user_id,
+			'user_name'   => $user_name,
+			'entity_type' => $entity_type,
+			'entity_id'   => $entity_id,
+			'entity_name' => $entity_name,
+			'action'      => $action,
+			'changes'     => $changes,
+		),
+		array('%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s')
+	);
+
+	// Tabelle auf maximal 250 Einträge begrenzen
+	$wpdb->query(
+		"DELETE FROM {$wpdb->prefix}cw_history
+		 WHERE id NOT IN (
+		     SELECT id FROM (
+		         SELECT id FROM {$wpdb->prefix}cw_history ORDER BY id DESC LIMIT 250
+		     ) AS keep_rows
+		 )"
+	);
+}
+
+function cw_get_history_handler() {
+	if (!current_user_can('cw_allow')) wp_die('forbidden');
+	check_ajax_referer('cw_history_nonce', 'nonce');
+	global $wpdb;
+	$rows = $wpdb->get_results(
+		"SELECT id, ts, user_name, entity_type, entity_id, entity_name, action, changes
+		 FROM {$wpdb->prefix}cw_history
+		 ORDER BY id DESC
+		 LIMIT 250"
+	);
+	wp_send_json_success($rows);
 }
 
 function reg_front(){

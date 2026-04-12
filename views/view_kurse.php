@@ -15,10 +15,9 @@ function kurs_head($show_new = false){
 		<h1>Kurse';
 
 	if($show_new) {
-		echo '<button id="cw-new-btn" class="page-title-action">Neu erstellen</button></h1>';
-	}else{
-		echo "</h1>";
+		echo '<button id="cw-new-btn" class="page-title-action">Neu erstellen</button>';
 	}
+	echo '<button id="cw-history-btn" class="page-title-action">Historie</button></h1>';
 }
 
 function show_kurse(){

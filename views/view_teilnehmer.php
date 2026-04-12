@@ -22,6 +22,7 @@ function teilnehmer(){
 						try{
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user_kurs');
 							$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.'cw_user');
+							$wpdb->query("DELETE FROM ".$wpdb->prefix."cw_history WHERE entity_type = 'teilnehmer'");
 							echo '<div class="notice notice-success inline">
 							        <p><strong>Erledigt:</strong>Alle Teilnehmer:innen wurden erfolgreich entfernt</p>
 						  		  </div>';
@@ -68,6 +69,7 @@ function teilnehmer(){
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
 					<h1 style="margin:0;">Teilnehmer:innen
 						<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
+						<button id="cw-history-btn" class="page-title-action">Historie</button>
 					</h1>
 					<form method="post" style="display:inline-flex;align-items:center;gap:6px;" onsubmit="return confirm(\'Wirklich alle Teilnehmer:innen löschen?\');">
 						<input type="checkbox" style="margin:0" value="1" name="delete_all" />

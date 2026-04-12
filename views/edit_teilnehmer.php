@@ -184,6 +184,17 @@ function save_edit() {
 
 	if ( $teilnehmer->load( absint( $_POST["id"] ) ) ) {
 
+		$old_name   = $teilnehmer->getVorname() . ' ' . $teilnehmer->getNachname();
+		$old_values = array(
+			'Vorname'       => $teilnehmer->getVorname(),
+			'Nachname'      => $teilnehmer->getNachname(),
+			'Email'         => $teilnehmer->getEmail(),
+			'Kurs'          => ( $teilnehmer->getKurs() ? $teilnehmer->getKurs()->getName() : '' ),
+			'Bezahlt'       => $teilnehmer->getPayed(),
+			'Kursleiter:in' => $teilnehmer->getIsCourseLeader(),
+			'Typ'           => $teilnehmer->get_paytype(),
+		);
+
 		$gby = absint( $_POST["gby"] );
 		$gbm = absint( $_POST["gbm"] );
 		$gbd = absint( $_POST["gbd"] );
@@ -195,8 +206,15 @@ function save_edit() {
 		$food  = sanitize_text_field( $_POST["food"] ?? '' );
 		$gotit = sanitize_text_field( $_POST["gotit"] ?? '' );
 
-		$teilnehmer->setVorname( sanitize_text_field( $_POST["vorname"] ?? '' ) );
-		$teilnehmer->setNachname( sanitize_text_field( $_POST["nachname"] ?? '' ) );
+		$new_vorname  = sanitize_text_field( $_POST["vorname"] ?? '' );
+		$new_nachname = sanitize_text_field( $_POST["nachname"] ?? '' );
+		$new_paytype  = absint( $_POST["paytype"] ?? 1 );
+		$new_payed    = isset( $_POST["payed"] ) ? 1 : 0;
+		$new_is_kl    = isset( $_POST["is_course_leader"] ) ? 1 : 0;
+		$new_kurs_id  = absint( $_POST["kurs"] ?? 0 );
+
+		$teilnehmer->setVorname( $new_vorname );
+		$teilnehmer->setNachname( $new_nachname );
 		$teilnehmer->setEmail( sanitize_email( $_POST["email"] ?? '' ) );
 		$teilnehmer->setStr( sanitize_text_field( $_POST["strasse"] ?? '' ) );
 		$teilnehmer->setPlz( sanitize_text_field( $_POST["plz"] ?? '' ) );
@@ -206,18 +224,36 @@ function save_edit() {
 		$teilnehmer->setEssen( in_array( $food, $allowed_food ) ? $food : sanitize_text_field( $_POST["food_sonst"] ?? '' ) );
 		$teilnehmer->setGotit( in_array( $gotit, $allowed_gotit ) ? $gotit : sanitize_text_field( $_POST["gotit_sonst"] ?? '' ) );
 		$teilnehmer->setSonstiges( sanitize_textarea_field( $_POST["sonstiges"] ?? '' ) );
-		$teilnehmer->setPayed( isset( $_POST["payed"] ) ? 1 : 0 );
-		$teilnehmer->setIsCourseLeader( isset( $_POST["is_course_leader"] ) ? 1 : 0 );
-		$teilnehmer->set_paytype( absint( $_POST["paytype"] ?? 1 ) );
+		$teilnehmer->setPayed( $new_payed );
+		$teilnehmer->setIsCourseLeader( $new_is_kl );
+		$teilnehmer->set_paytype( $new_paytype );
 
 		$tnp = ( $teilnehmer->get_paytype() == 1 ? $options->getTeilnahmePreis() : $options->get_teilnahme_preis_alumni() );
 		$teilnehmer->set_to_pay( $tnp );
 
 		$regkurs = new Kurs( $wpdb );
-		$regkurs->load( absint( $_POST["kurs"] ?? 0 ) );
+		$regkurs->load( $new_kurs_id );
 		$teilnehmer->setKurs( $regkurs );
 
 		$teilnehmer->save();
+
+		$new_name   = $new_vorname . ' ' . $new_nachname;
+		$new_values = array(
+			'Vorname'       => $new_vorname,
+			'Nachname'      => $new_nachname,
+			'Email'         => sanitize_email( $_POST["email"] ?? '' ),
+			'Kurs'          => $regkurs->getName(),
+			'Bezahlt'       => $new_payed,
+			'Kursleiter:in' => $new_is_kl,
+			'Typ'           => $new_paytype,
+		);
+		$diff = [];
+		foreach ( $old_values as $k => $v ) {
+			if ( (string)$v !== (string)$new_values[$k] ) {
+				$diff[] = $k . ': ' . $v . ' → ' . $new_values[$k];
+			}
+		}
+		cw_log_history( 'teilnehmer', $teilnehmer->getId(), $new_name, 'update', implode( ', ', $diff ) );
 
 		return "ok";
 	}
@@ -232,7 +268,10 @@ function delete_user() {
 	$teilnehmer = new Teilnehmer( $wpdb );
 
 	if ( $teilnehmer->load( $_POST["value"] ) ) {
+		$name = $teilnehmer->getVorname() . ' ' . $teilnehmer->getNachname();
+		$id   = $teilnehmer->getId();
 		$teilnehmer->delete();
+		cw_log_history( 'teilnehmer', $id, $name, 'delete', '' );
 	} else {
 		return "no";
 	}

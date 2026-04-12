@@ -89,6 +89,23 @@ function init_database($db){
 	dbDelta($cw_options);
 	dbDelta($cw_events);
 
+	/* Neue Tabelle: nur anlegen wenn sie noch nicht existiert */
+	if( $db->get_var("SHOW TABLES LIKE '".$db->prefix."cw_history'") !== $db->prefix.'cw_history' ) {
+		$cw_history = "CREATE TABLE ".$db->prefix."cw_history (
+			id int(11) NOT NULL AUTO_INCREMENT,
+			ts DATETIME NOT NULL,
+			user_id int(11) NOT NULL DEFAULT 0,
+			user_name VARCHAR(255) NOT NULL DEFAULT '',
+			entity_type VARCHAR(50) NOT NULL DEFAULT '',
+			entity_id int(11),
+			entity_name VARCHAR(255),
+			action VARCHAR(20) NOT NULL DEFAULT '',
+			changes TEXT,
+			PRIMARY KEY  (id)
+		) ".$db->get_charset_collate();
+		dbDelta($cw_history);
+	}
+
 	/**
 	 * Lase alle Kurse, wenn das NULL ist, wurde das Plugin noch nie aktiviert.
 	 * Demnach erstellen wir einen Kurs Sonstiges mit der ID 1

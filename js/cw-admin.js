@@ -76,4 +76,73 @@ jQuery("document").ready(function(){
         }
     })(jQuery);
 
+    /* ----------------------------------------------------------------
+       Historie-Dialog
+       ---------------------------------------------------------------- */
+    jQuery(document).on('click', '#cw-history-btn', function () {
+        var $dialog = jQuery('#cw-history-dialog');
+
+        if ($dialog.length === 0) {
+            jQuery('body').append(
+                '<div id="cw-history-dialog" title="&Auml;nderungshistorie (letzte 250)">' +
+                '<div id="cw-history-content" style="overflow:auto;max-height:460px">' +
+                '<p>Wird geladen&hellip;</p></div></div>'
+            );
+            $dialog = jQuery('#cw-history-dialog');
+            $dialog.dialog({
+                modal: true,
+                width: Math.min(960, jQuery(window).width() - 40),
+                buttons: {
+                    'Schlie\u00dfen': function () { jQuery(this).dialog('close'); }
+                }
+            });
+        } else {
+            jQuery('#cw-history-content').html('<p>Wird geladen&hellip;</p>');
+            $dialog.dialog('open');
+        }
+
+        jQuery.post(
+            cw_history.ajaxurl,
+            { action: 'cw_get_history', nonce: cw_history.nonce },
+            function (response) {
+                if (!response.success) {
+                    jQuery('#cw-history-content').html('<p>Fehler beim Laden der Historie.</p>');
+                    return;
+                }
+                var rows = response.data;
+                if (rows.length === 0) {
+                    jQuery('#cw-history-content').html('<p>Noch keine Eintr\u00e4ge vorhanden.</p>');
+                    return;
+                }
+                var actionLabel = { create: 'Erstellt', update: 'Ge\u00e4ndert', delete: 'Gel\u00f6scht' };
+                var entityLabel = { kurs: 'Kurs', teilnehmer: 'Teilnehmer:in' };
+                var html = '<table class="widefat striped" style="width:100%;border-collapse:collapse">' +
+                    '<thead><tr>' +
+                    '<th style="white-space:nowrap">Zeitpunkt</th>' +
+                    '<th>Aktion</th>' +
+                    '<th>Typ</th>' +
+                    '<th>Name</th>' +
+                    '<th>Benutzer:in</th>' +
+                    '<th>\u00c4nderungen</th>' +
+                    '</tr></thead><tbody>';
+                jQuery.each(rows, function (i, row) {
+                    var al = actionLabel[row.action] || row.action;
+                    var el = entityLabel[row.entity_type] || row.entity_type;
+                    var actionStyle = row.action === 'delete' ? 'color:#b00;font-weight:bold' :
+                                      row.action === 'create' ? 'color:#0a0;font-weight:bold' : '';
+                    html += '<tr>' +
+                        '<td style="white-space:nowrap">' + row.ts + '</td>' +
+                        '<td><span style="' + actionStyle + '">' + al + '</span></td>' +
+                        '<td>' + el + '</td>' +
+                        '<td>' + row.entity_name + '</td>' +
+                        '<td>' + row.user_name + '</td>' +
+                        '<td style="font-size:0.9em;color:#555">' + (row.changes || '&ndash;') + '</td>' +
+                        '</tr>';
+                });
+                html += '</tbody></table>';
+                jQuery('#cw-history-content').html(html);
+            }
+        );
+    });
+
 });

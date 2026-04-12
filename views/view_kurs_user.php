@@ -14,6 +14,7 @@ function tkurs(){
         <div class="wrap">
 		    <h1>Kurse
 		    <a class="page-title-action" id="export" href="' . menu_page_url( 'tkurs', false ) . '&action=export">Tabelle exportieren</a>
+		    <button id="cw-history-btn" class="page-title-action">Historie</button>
 		    </h1>
     ';
 
