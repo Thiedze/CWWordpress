@@ -68,7 +68,8 @@ function teilnehmer(){
 		echo'
 				<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
 					<h1 style="margin:0;">Teilnehmer:innen
-						<a class="page-title-action" id="export" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export">Tabelle exportieren</a>
+						<a class="page-title-action" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export&format=xlsx">Als XLSX exportieren</a>
+						<a class="page-title-action" href="' . menu_page_url( 'teilnehmer', false ) . '&action=export&format=csv">Als CSV exportieren</a>
 						<button id="cw-history-btn" class="page-title-action">Historie</button>
 					</h1>
 					<form method="post" style="display:inline-flex;align-items:center;gap:6px;" onsubmit="return confirm(\'Wirklich alle Teilnehmer:innen löschen?\');">

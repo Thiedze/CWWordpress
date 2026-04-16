@@ -500,12 +500,22 @@ function ad_init(){
 
 					case 'teilnehmer':
 						$export = new Export_XLS($wpdb);
-						$export->export_teilnehmer();
+						$format = ( isset( $_GET['format'] ) && $_GET['format'] === 'csv' ) ? 'csv' : 'xlsx';
+						if ( $format === 'csv' ) {
+							$export->export_teilnehmer_csv();
+						} else {
+							$export->export_teilnehmer();
+						}
 						break;
 
 					case 'tkurs':
 						$export = new Export_XLS($wpdb);
-						$export->export_kurs_teilnehmer();
+						$format = ( isset( $_GET['format'] ) && $_GET['format'] === 'csv' ) ? 'csv' : 'xlsx';
+						if ( $format === 'csv' ) {
+							$export->export_kurs_teilnehmer_csv();
+						} else {
+							$export->export_kurs_teilnehmer();
+						}
 						break;
 
 					default:

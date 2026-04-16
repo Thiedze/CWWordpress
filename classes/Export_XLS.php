@@ -187,6 +187,96 @@ class Export_XLS {
 	}
 
 
+	public function export_teilnehmer_csv() {
+		$teilnehmer = get_all_teilnehmer();
+		if ( ! $teilnehmer ) {
+			return;
+		}
+
+		$rows   = [];
+		$rows[] = [ 'Nachname', 'Vorname', 'Email', 'Adresse', 'PLZ', 'Ort', 'Geburtsdatum', 'Alter', '(Hoch-)Schule/Arbeitsstätte', 'Kurs', 'Essen', 'Sonstiges', 'Aufmerksam durch:', 'Registrierdatum', 'Schüler:in/Student:in', 'Gesamtbetrag', 'Teilnahme bezahlt?', 'Kursleiter:in' ];
+
+		foreach ( $teilnehmer as $teil ) {
+			$rows[] = [
+				$teil->getNachname(),
+				$teil->getVorname(),
+				$teil->getEmail(),
+				$teil->getStr(),
+				$teil->getPlz(),
+				$teil->getOrt(),
+				date( 'd.m.Y', strtotime( $teil->getGeb() ) ),
+				calc_age( $teil->getGeb() ),
+				$teil->getSchule(),
+				$teil->getKurs()->getName(),
+				$teil->getEssen(),
+				$teil->getSonstiges(),
+				$teil->getGotit(),
+				date( 'd.m.Y H:i:s', strtotime( $teil->getRegdate() ) ),
+				( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ),
+				$teil->get_to_pay(),
+				( $teil->getPayed() == 1 ? 'Ja' : 'Nein' ),
+				( $teil->getIsCourseLeader() ? 'Ja' : 'Nein' ),
+			];
+		}
+
+		$this->download_csv( $rows, 'Campuswoche_Teilnehmer.csv' );
+	}
+
+	public function export_kurs_teilnehmer_csv() {
+		$kurse  = get_all_kurse( true );
+		$rows   = [];
+		$rows[] = [ 'Kurs', 'Nachname', 'Vorname', 'Email', 'Alter', '(Hoch-)Schule/Arbeitsstätte', 'Sonstiges', 'Registrierdatum', 'Schüler:in/Student:in', 'Gesamtbetrag', 'Teilnahme bezahlt?', 'Kursleiter:in' ];
+
+		foreach ( $kurse as $kurs ) {
+			$teilnehmer = get_all_teilnehmer_by_kurs( $kurs->getId() );
+			if ( $teilnehmer ) {
+				foreach ( $teilnehmer as $teil ) {
+					$rows[] = [
+						$kurs->getName(),
+						$teil->getNachname(),
+						$teil->getVorname(),
+						$teil->getEmail(),
+						calc_age( $teil->getGeb() ),
+						$teil->getSchule(),
+						$teil->getSonstiges(),
+						date( 'd.m.Y H:i:s', strtotime( $teil->getRegdate() ) ),
+						( $teil->get_paytype() == 1 ? 'Ja' : 'Nein' ),
+						$teil->get_to_pay(),
+						( $teil->getPayed() == 1 ? 'Ja' : 'Nein' ),
+						( $teil->getIsCourseLeader() ? 'Ja' : 'Nein' ),
+					];
+				}
+			}
+		}
+
+		$this->download_csv( $rows, 'Campuswoche_Kurse_Teilnehmer.csv' );
+	}
+
+	private function download_csv( array $rows, string $filename ) {
+		ob_start();
+		$handle = fopen( 'php://output', 'w' );
+		fwrite( $handle, "\xEF\xBB\xBF" ); // UTF-8 BOM für Excel
+		foreach ( $rows as $row ) {
+			fputcsv( $handle, $row, ';' );
+		}
+		fclose( $handle );
+		$content = ob_get_clean();
+
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+
+		header( 'Content-Type: text/csv; charset=UTF-8' );
+		header( 'Content-Disposition: attachment;filename="' . $filename . '"' );
+		header( 'Content-Transfer-Encoding: binary' );
+		header( 'Content-Length: ' . strlen( $content ) );
+		header( 'Cache-Control: max-age=0' );
+		header( 'Pragma: public' );
+
+		echo $content;
+		exit();
+	}
+
 	private function download_file( $excel, $filename ) {
 
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter( $excel, 'Xlsx' );

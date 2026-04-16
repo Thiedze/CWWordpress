@@ -13,7 +13,8 @@ function tkurs(){
     echo '
         <div class="wrap">
 		    <h1>Kurse
-		    <a class="page-title-action" id="export" href="' . menu_page_url( 'tkurs', false ) . '&action=export">Tabelle exportieren</a>
+		    <a class="page-title-action" href="' . menu_page_url( 'tkurs', false ) . '&action=export&format=xlsx">Als XLSX exportieren</a>
+		    <a class="page-title-action" href="' . menu_page_url( 'tkurs', false ) . '&action=export&format=csv">Als CSV exportieren</a>
 		    <button id="cw-history-btn" class="page-title-action">Historie</button>
 		    </h1>
     ';
